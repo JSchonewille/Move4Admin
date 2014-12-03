@@ -2,6 +2,7 @@
 package com.example.jeff.move4admin.Library;
 
 import android.app.Application;
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.android.volley.Request;
@@ -21,8 +22,16 @@ public class RequestController extends Application {
 
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
-
+    private static Context mCtx;
     private static RequestController mInstance;
+
+private RequestController(Context context)
+{
+    mCtx = context;
+    mRequestQueue = getRequestQueue();
+
+}
+
 
     @Override
     public void onCreate() {
@@ -30,13 +39,16 @@ public class RequestController extends Application {
         mInstance = this;
     }
 
-    public static synchronized RequestController getInstance() {
+    public static synchronized RequestController getInstance( Context c) {
+        if(mInstance == null) {
+            mInstance = new RequestController(c);
+        }
         return mInstance;
     }
 
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
         }
 
         return mRequestQueue;

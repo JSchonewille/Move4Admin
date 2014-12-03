@@ -21,14 +21,13 @@ public class User {
     private String street;
     private String houseNumber;
     private String postalCode;
+    private String Created;
     private String city;
     private String email;
     private Bitmap image;
     private Byte[] byteArray;
     private String filePath;
-
     public User(){}
-
     public User(JSONObject object){
         try {
             this.userID = object.getInt("customerID");
@@ -57,8 +56,25 @@ public class User {
         this.filePath = "";
     }
 
-    public void setImage(Bitmap bitmap){
-        this.image = bitmap;
+    public static ArrayList<User> fromJSON(JSONArray array){
+        ArrayList<User> henk = new ArrayList<User>();
+        for(int i = 0; i < array.length(); i++) {
+            try{
+                henk.add(new User(array.getJSONObject(i)));
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        return henk;
+    }
+
+    public String getCreated() {
+        return Created;
+    }
+
+    public void setCreated(String created) {
+        Created = created;
     }
 
     public String getFilePath(){
@@ -129,24 +145,15 @@ public class User {
         return image;
     }
 
-    public void setUserID (int user_ID){
-        this.userID = user_ID;
+    public void setImage(Bitmap bitmap){
+        this.image = bitmap;
     }
 
     public int getUserID() {
         return userID;
     }
 
-    public static ArrayList<User> fromJSON(JSONArray array){
-        ArrayList<User> henk = new ArrayList<User>();
-        for(int i = 0; i < array.length(); i++) {
-            try{
-                henk.add(new User(array.getJSONObject(i)));
-            }
-            catch (JSONException e){
-                e.printStackTrace();
-            }
-        }
-        return henk;
+    public void setUserID (int user_ID){
+        this.userID = user_ID;
     }
 }

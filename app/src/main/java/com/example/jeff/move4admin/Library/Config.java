@@ -7,7 +7,7 @@ public class Config {
 
     public static String GETPRESENTUSERS = "http://ibeacontest.herobo.com/getpresentusers.php";
     public static String GETUSERIMAGES = "http://ibeacontest.herobo.com/getimages.php";
-    public static String GETALLUSERS = "http://ibeacontest.herobo.com/getalllikes.php";
+    public static String GETALLUSERS = "http://ibeacontest.herobo.com/getallusers.php";
     public static String GETALLLIKES = "http://ibeacontest.herobo.com/getalllikes.php";
 
 }

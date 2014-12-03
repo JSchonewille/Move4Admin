@@ -1,6 +1,8 @@
 package com.example.jeff.move4admin.Library;
 
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -28,64 +30,40 @@ public class ServerRequestHandler {
     ////////////////
     //REQUESTS
     ////////////////
-    public static void getPresentUsers(Response.Listener<JSONArray> l, Response.ErrorListener el) {
+    public static void getPresentUsers(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
         String URL = Config.GETPRESENTUSERS;
 
         JsonArrayRequest req = new JsonArrayRequest(URL, l, el);
 
-        RequestController.getInstance().addToRequestQueue(req);
+        RequestController.getInstance(c).addToRequestQueue(req);
     }
 
-    public static void getAllLikes(Response.Listener<JSONArray> l, Response.ErrorListener el) {
+    public static void getAllLikes(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
         String URL = Config.GETALLLIKES;
 
         JsonArrayRequest req = new JsonArrayRequest(URL, l, el);
 
-        RequestController.getInstance().addToRequestQueue(req);
+        RequestController.getInstance(c).addToRequestQueue(req);
+    }
+
+    public static void getAllUsers(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
+        String URL = Config.GETALLUSERS;
+
+        JsonArrayRequest req = new JsonArrayRequest(URL, l, el);
+        RequestController.getInstance(c).addToRequestQueue(req);
     }
 
     public static String encodeImage(byte[] imageByteArray) {
         return Base64.encodeToString(imageByteArray, 1);
     }
 
-    public static void getUserImages(Response.Listener<JSONArray> l, Response.ErrorListener el) {
+    public static void getUserImages(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
         String URL = Config.GETUSERIMAGES;
 
         JsonArrayRequest req = new JsonArrayRequest(URL, l, el);
 
-        RequestController.getInstance().addToRequestQueue(req);
+        RequestController.getInstance(c).addToRequestQueue(req);
     }
-
-    public void getUserImagesParsed(){
-        getUserImages(new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                Log.d("Images array", jsonArray.toString());
-                //TODO: Parse hier je images uit de array en doe er iets mee
-               /* bijvoorbeerd zo:
-                byte[] decoded = Base64.decode(jsonArray.getJSONObject( int index).
-                getString("profileImage").getBytes(), Base64.DEFAULT);
-                String path = saveImage(decoded);
-
-                laat deze methode dan bijvoorbeeld een array met paden terugsturen van elke image*/
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                if (volleyError.networkResponse != null)
-                    Log.e("NETWORKERROR", volleyError.networkResponse.statusCode + " " + new String(volleyError.networkResponse.data));
-                else {
-                    if (volleyError.getMessage() == null)
-                        Log.e("NETWORKERROR", "timeout");
-                    else
-                        Log.e("NETWORKERROR", volleyError.getMessage());
-                }
-            }
-        });
-    }
-
-
 
 
     public String saveImage(byte[] byteArray) {
