@@ -1,14 +1,34 @@
 package com.example.jeff.move4admin.Fragments;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
+import com.example.jeff.move4admin.Library.DatabaseFunctions;
+import com.example.jeff.move4admin.Library.User;
+import com.example.jeff.move4admin.Library.UserLike;
 import com.example.jeff.move4admin.R;
+import com.example.jeff.move4admin.UserAdapter;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +48,15 @@ public class UserFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private String savedPath;
+    ArrayList<User> userlist = new ArrayList<User>();
+    ArrayList<UserLike> userlikes = new ArrayList<UserLike>();
+    DatabaseFunctions dbf;
+    private ImageView img;
+    private TextView t_naam;
+    private TextView t_mail;
+    private TextView t_created;
+    private ListView l_likes;
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,6 +74,7 @@ public class UserFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,6 +88,13 @@ public class UserFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
+            ContextWrapper cw = new ContextWrapper(getActivity());
+            savedPath = cw.getDir("imageDir", Context.MODE_PRIVATE).toString();
+            dbf = DatabaseFunctions.getInstance(getActivity());
+            userlist = dbf.getUsers();
+            userlikes = dbf.getUserLikes();
+
         }
     }
 
@@ -65,9 +102,69 @@ public class UserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user, container, false);
+        View myInflatedView = inflater.inflate(R.layout.fragment_user, container, false);
+        ListView l_users = (ListView) myInflatedView.findViewById(R.id.listView);
+        img = (ImageView) myInflatedView.findViewById(R.id.imageView);
+        t_naam = (TextView) myInflatedView.findViewById(R.id.t_nameLabel);
+        t_mail = (TextView) myInflatedView.findViewById(R.id.t_mail);
+        t_created = (TextView) myInflatedView.findViewById(R.id.t_created);
+        l_likes = (ListView) myInflatedView.findViewById(R.id.l_likes);
+
+        l_users.setAdapter(new UserAdapter(getActivity(),userlist));
+        l_users.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+               UserlistClick(adapterView,view,i,l);
+            }
+        });
+
+        return myInflatedView;
     }
 
+
+
+    public void UserlistClick(AdapterView<?> adapterView, View view, int Position, long id)
+    {
+        User u = userlist.get(Position);
+        t_naam.setText(u.getName() + " " + u.getLastName());
+        t_naam.setVisibility(View.VISIBLE);
+
+        t_mail.setText   ("e-mail adress : " + u.getEmail());
+        t_created.setText("aangemaakt    : " + u.getCreated());
+
+
+        try {
+            File f = new File(savedPath, u.getFilePath().substring(7));
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            b = Bitmap.createScaledBitmap(b, 800, 800, true);
+            img.setImageBitmap(b);
+        }
+        catch (Exception e)
+        {
+            Bitmap noimg = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.nopic);
+            noimg = Bitmap.createScaledBitmap(noimg, 800, 800, true);
+            img.setImageBitmap(noimg);
+        }
+
+        for (UserLike ul :userlikes)
+        {
+            if(ul.getUserID() == u.getUserID())
+            {
+                ArrayList<String> list = ul.getLikes();
+
+                if(list.size() >0) {
+                    ArrayAdapter<String> s = new ArrayAdapter<String>(getActivity(), R.layout.simple_list_item, list);
+                    l_likes.setAdapter(s);
+                }
+                break;
+            }
+        }
+
+
+
+
+
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

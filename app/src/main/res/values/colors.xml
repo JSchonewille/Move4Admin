@@ -2,5 +2,6 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="move4black">#454350</color>
+    <color name="move4darker">#ff2b2937</color>
 
 </resources>
