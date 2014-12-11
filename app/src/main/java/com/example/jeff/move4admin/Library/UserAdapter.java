@@ -1,4 +1,4 @@
-package com.example.jeff.move4admin;
+package com.example.jeff.move4admin.Library;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.jeff.move4admin.Library.DatabaseFunctions;
 import com.example.jeff.move4admin.Library.User;
+import com.example.jeff.move4admin.R;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -23,6 +23,7 @@ public class DatabaseFunctions {
     private static final String DATABASE_NAME = "ibeaconkassa";
     // Table names
     private static final String TABLE_USERLIKES = " userlikes ";
+    private static final String TABLE_ALLLIKES = " alllikes ";
     private static final String TABLE_ALLUSERS = " allusers ";
     private SQLiteOpenHelper sqLiteOpenHelper;
     // User likes Column names
@@ -35,6 +36,9 @@ public class DatabaseFunctions {
     private static final String KEY_USERLASTNAME = "lastName";
     private static final String KEY_USEREMAIL = "email";
     private static final String KEY_USERCREATED = "created";
+    // all categories Column names
+    private static final String KEY_ALLCATEGORYID = "categoryID";
+    private static final String KEY_ALLCATEGORYNAME = "categoryName";
     //endregion
 
     //create instance
@@ -61,12 +65,14 @@ public class DatabaseFunctions {
 // Drop older table if existed
                 db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERLIKES);
                 db.execSQL("DROP TABLE IF EXISTS " + TABLE_ALLUSERS);
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_ALLLIKES);
                 // Create tables again
                 onCreate(db);
             }
         };
        sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_USERLIKES);
        sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ALLUSERS);
+       sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ALLLIKES);
        createTables(sqLiteOpenHelper.getWritableDatabase());
 
     }
@@ -92,6 +98,29 @@ public class DatabaseFunctions {
         values.put(KEY_USERCREATED, created); //
         db.insert(TABLE_ALLUSERS, null, values);
         db.close(); // Closing database connection
+    }
+
+    public void addALLCategory(String name)
+    {
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ALLCATEGORYNAME,name);
+
+        db.insert(TABLE_ALLLIKES,null,values);
+        db.close();
+    }
+
+    public void addALLCategory(int id, String name)
+    {
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ALLCATEGORYID,id);
+        values.put(KEY_ALLCATEGORYNAME,name);
+
+        db.insert(TABLE_ALLLIKES,null,values);
+        db.close();
     }
 
 
@@ -166,6 +195,46 @@ public class DatabaseFunctions {
         return userlikes;
     }
 
+    public ArrayList<Like> getALLlikes(){
+        ArrayList<Like> likes = new ArrayList<Like>();
+
+        String selectQuery = "SELECT * FROM " + TABLE_ALLLIKES;
+        SQLiteDatabase db = sqLiteOpenHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        boolean empty = true;
+        // Move to first row
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0){
+            do {
+                int id = Integer.parseInt(cursor.getString(0));
+                String name = cursor.getString(1);
+
+                for (Like u : likes)
+                {
+                    if (u.getcategoryID() == id)
+                    {
+                        u.setcategoryName(name);
+                        empty = false;
+                        break;
+                    }
+                    else {
+                        empty = true;
+                    }
+                }
+                if (empty)
+                {
+                    Like l = new Like(id,name);
+                    likes.add(l);
+                }
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return category list
+        return likes;
+    }
+
 
 
 /**
@@ -183,6 +252,13 @@ public class DatabaseFunctions {
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
         // Delete All Rows
         db.delete(TABLE_ALLUSERS, null, null);
+        db.close();
+    }
+
+    public void resetAllLikes(){
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_ALLLIKES, null, null);
         db.close();
     }
 
@@ -205,5 +281,11 @@ public class DatabaseFunctions {
                 + KEY_USEREMAIL + " TEXT, "
                 + KEY_USERCREATED + " TEXT " +")";
         db.execSQL(CREATE_USER_TABLE);
+
+
+        String CREATE_ALLLIKES_TABLE = "CREATE TABLE " + TABLE_ALLLIKES + "("
+                + KEY_ALLCATEGORYID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + KEY_ALLCATEGORYNAME + " TEXT " +")";
+        db.execSQL(CREATE_ALLLIKES_TABLE);
     }
 }

@@ -9,15 +9,19 @@ import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Sander on 11-11-2014.
@@ -64,6 +68,35 @@ public class ServerRequestHandler {
 
         RequestController.getInstance(c).addToRequestQueue(req);
     }
+
+    public static void getAllCategories(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
+        String URL = Config.GETALLCATEGORIES;
+
+        JsonArrayRequest req = new JsonArrayRequest(URL, l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(req);
+    }
+
+    public static void uploadCategory(Response.Listener<JSONObject> l, Response.ErrorListener el, final String categoryName,Context c){
+        String URL = Config.INSERTCATEGORY;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("categoryName", categoryName);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
+    public static void DeleteCategory(Response.Listener<JSONObject> l, Response.ErrorListener el, final String categoryName,Context c){
+        String URL = Config.DELETECATEGORY;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("categoryName", categoryName);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
 
 
     public String saveImage(byte[] byteArray) {

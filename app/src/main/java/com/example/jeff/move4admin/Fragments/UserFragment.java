@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -14,21 +13,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.example.jeff.move4admin.Library.DatabaseFunctions;
+import com.example.jeff.move4admin.Library.LikesAdapter;
 import com.example.jeff.move4admin.Library.User;
 import com.example.jeff.move4admin.Library.UserLike;
 import com.example.jeff.move4admin.R;
-import com.example.jeff.move4admin.UserAdapter;
+import com.example.jeff.move4admin.Library.UserAdapter;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,7 +55,8 @@ public class UserFragment extends Fragment {
     private TextView t_naam;
     private TextView t_mail;
     private TextView t_created;
-    private ListView l_likes;
+    private TextView t_likesLabel;
+    private GridView g_likes;
 
     private OnFragmentInteractionListener mListener;
 
@@ -108,7 +108,9 @@ public class UserFragment extends Fragment {
         t_naam = (TextView) myInflatedView.findViewById(R.id.t_nameLabel);
         t_mail = (TextView) myInflatedView.findViewById(R.id.t_mail);
         t_created = (TextView) myInflatedView.findViewById(R.id.t_created);
-        l_likes = (ListView) myInflatedView.findViewById(R.id.l_likes);
+        t_likesLabel =( (TextView) myInflatedView.findViewById(R.id.t_likesLabel));
+        g_likes = (GridView) myInflatedView.findViewById(R.id.g_likes);
+
 
         l_users.setAdapter(new UserAdapter(getActivity(),userlist));
         l_users.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -153,8 +155,14 @@ public class UserFragment extends Fragment {
                 ArrayList<String> list = ul.getLikes();
 
                 if(list.size() >0) {
-                    ArrayAdapter<String> s = new ArrayAdapter<String>(getActivity(), R.layout.simple_list_item, list);
-                    l_likes.setAdapter(s);
+                    LikesAdapter l = new LikesAdapter(getActivity(),list);
+                    g_likes.setAdapter(l);
+                    t_likesLabel.setVisibility(View.VISIBLE);
+                    g_likes.setVisibility(View.VISIBLE);
+                }
+                else{
+                    t_likesLabel.setVisibility(View.INVISIBLE);
+                    g_likes.setVisibility(View.INVISIBLE);
                 }
                 break;
             }
