@@ -1,4 +1,4 @@
-package com.example.jeff.move4admin.Library;
+package com.example.jeff.move4admin.Library.adapters;
 
 import android.content.Context;
 import android.content.ContextWrapper;

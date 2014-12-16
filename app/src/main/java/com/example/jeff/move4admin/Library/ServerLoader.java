@@ -67,8 +67,6 @@ public class ServerLoader {
         ServerRequestHandler.getAllUsers(new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray jsonArray) {
-
-                int inc = (int) Math.ceil(((30.0 / jsonArray.length())));
                 for (int i = 0; i < jsonArray.length(); i++) {
                     try {
                         Log.d("Parsing", "getting users");
@@ -150,7 +148,7 @@ public class ServerLoader {
 
     }
 
-    private void loadImages() {
+    public void loadImages() {
         ServerRequestHandler.getUserImages(new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray jsonArray) {
@@ -202,7 +200,7 @@ public class ServerLoader {
 
 
 
-    private void saveToInternalSorage(Bitmap bitmapImage, String filename) {
+    public void saveToInternalSorage(Bitmap bitmapImage, String filename) {
         ContextWrapper cw = new ContextWrapper(mContext);
         // path to /data/data/yourapp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);

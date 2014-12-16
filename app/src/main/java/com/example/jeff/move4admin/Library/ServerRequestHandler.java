@@ -77,6 +77,28 @@ public class ServerRequestHandler {
         RequestController.getInstance(c).addToRequestQueue(req);
     }
 
+    public static void getAllProducts(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
+        String URL = Config.GETALLPRODUCTS;
+
+        JsonArrayRequest req = new JsonArrayRequest(URL, l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(req);
+    }
+
+    public static void uploadProduct(Response.Listener<JSONObject> l, Response.ErrorListener el, final String productName, final int categoryID, final String image, final String description, Context c){
+        String URL = Config.INSERTPRODUCT;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("name", productName);
+        params.put("categoryID",Integer.toString(categoryID));
+        params.put("image", image);
+        params.put("description", description);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
+
     public static void uploadCategory(Response.Listener<JSONObject> l, Response.ErrorListener el, final String categoryName,Context c){
         String URL = Config.INSERTCATEGORY;
         HashMap<String, String> params = new HashMap<String, String>();

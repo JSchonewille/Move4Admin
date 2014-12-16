@@ -1,13 +1,133 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.jeff.move4admin.Fragments.ProductFragment">
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/move4black">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
+    <ListView
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:text="Products" />
+        android:id="@+id/productList"
+        android:layout_weight="0.2"
+        android:footerDividersEnabled="true" />
 
-</FrameLayout>
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.8">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.8"
+            android:id="@+id/viewFrame"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/t_productLabel"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:autoText="false"
+                android:background="@color/move4darker"
+                android:visibility="invisible" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="260dp">
+
+            <ImageView
+                android:layout_width="259dp"
+                android:layout_height="259dp"
+                android:id="@+id/i_productImage" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/t_productInfo" />
+            </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/editFrame"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/t_addProductLabel"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:autoText="false"
+                    android:background="@color/move4darker"
+                    android:visibility="invisible" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="260dp">
+
+                    <ImageView
+                        android:layout_width="259dp"
+                        android:layout_height="259dp"
+                        android:id="@+id/i_addImage"
+                        android:background="@android:drawable/ic_menu_camera" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:text="Name"
+                            android:ems="10"
+                            android:id="@+id/e_addProductName" />
+
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/s_addProductCategory"
+                            android:layout_gravity="center_vertical" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/e_addProductDesc"
+                    android:text="Description"
+                    android:gravity="left" />
+            </LinearLayout>
+        </FrameLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

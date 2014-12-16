@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.example.jeff.move4admin.Library.AllCategoriesAdapter;
+import com.example.jeff.move4admin.Library.adapters.AllCategoriesAdapter;
 import com.example.jeff.move4admin.Library.DatabaseFunctions;
 import com.example.jeff.move4admin.Library.Like;
 import com.example.jeff.move4admin.Library.ServerLoader;
@@ -139,6 +139,7 @@ public class CategoryFragment extends Fragment {
                 for (Like l : likes) {
                     if (l.getcategoryName().equals(s)) {
                         doublevalue = true;
+                        e_categoryinput.setError("category already exists");
                         break;
                     }
                 }
@@ -232,7 +233,7 @@ public class CategoryFragment extends Fragment {
             public void onResponse(JSONArray jsonArray) {
                 dbf.resetAllLikes();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
+                        try {
                         JSONObject o = jsonArray.getJSONObject(i);
                         int id = o.getInt("id");
                         String like = o.getString("name");

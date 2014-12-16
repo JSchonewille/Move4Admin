@@ -12,18 +12,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.jeff.move4admin.Library.DatabaseFunctions;
-import com.example.jeff.move4admin.Library.LikesAdapter;
+import com.example.jeff.move4admin.Library.adapters.LikesAdapter;
 import com.example.jeff.move4admin.Library.User;
 import com.example.jeff.move4admin.Library.UserLike;
 import com.example.jeff.move4admin.R;
-import com.example.jeff.move4admin.Library.UserAdapter;
+import com.example.jeff.move4admin.Library.adapters.UserAdapter;
 
 import java.io.File;
 import java.io.FileInputStream;

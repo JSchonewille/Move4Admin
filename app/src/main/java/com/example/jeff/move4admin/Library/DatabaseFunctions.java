@@ -25,6 +25,8 @@ public class DatabaseFunctions {
     private static final String TABLE_USERLIKES = " userlikes ";
     private static final String TABLE_ALLLIKES = " alllikes ";
     private static final String TABLE_ALLUSERS = " allusers ";
+
+
     private SQLiteOpenHelper sqLiteOpenHelper;
     // User likes Column names
     private static final String KEY_USERID = "id";

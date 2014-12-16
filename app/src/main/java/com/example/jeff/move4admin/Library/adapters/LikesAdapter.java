@@ -1,10 +1,11 @@
-package com.example.jeff.move4admin.Library;
+package com.example.jeff.move4admin.Library.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jeff.move4admin.R;
@@ -14,15 +15,15 @@ import java.util.ArrayList;
 /**
  * Created by Jeff on 10-12-2014.
  */
-public class AllCategoriesAdapter extends BaseAdapter {
-    ArrayList<Like> likes = new ArrayList<Like>();
+public class LikesAdapter extends BaseAdapter {
+    ArrayList<String> likes = new ArrayList<String>();
     Context mContext;
     private LayoutInflater mInflater;
 
-    public AllCategoriesAdapter(Context c, ArrayList<Like> l)
+    public LikesAdapter(Context context,ArrayList<String> l)
     {
-        mContext = c;
-        mInflater = LayoutInflater.from(c);
+        mContext = context;
+        mInflater = LayoutInflater.from(context);
         likes = l;
     }
 
@@ -49,22 +50,20 @@ public class AllCategoriesAdapter extends BaseAdapter {
         if(ConvertView == null) {
             view = mInflater.inflate(R.layout.likesrow_layout, viewGroup, false);
             holder = new ViewHolder();
-            holder.title = (TextView)view.findViewById(R.id.t_likesrow_name);
+            holder.name = (TextView)view.findViewById(R.id.t_likesrow_name);
             view.setTag(holder);
         } else {
             view = ConvertView;
             holder = (ViewHolder)view.getTag();
         }
 
-        holder.title.setText(likes.get(i).getcategoryName());
+        holder.name.setText(likes.get(i));
 
         return view;
-
     }
 
-
     private class ViewHolder {
-        public TextView title;
+        public TextView name;
     }
 
 }
