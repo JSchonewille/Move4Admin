@@ -22,7 +22,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="0.8"
             android:id="@+id/viewFrame"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -41,7 +41,7 @@
                 android:background="@color/move4darker"
                 android:visibility="invisible" />
 
-            <LinearLayout
+                <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -52,12 +52,28 @@
                 android:layout_height="259dp"
                 android:id="@+id/i_productImage" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Category: "
+                        android:id="@+id/t_productCategoryLabel"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:id="@+id/t_productCategory"
+                        android:layout_marginLeft="10dp" />
+
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/t_productInfo" />
-            </LinearLayout>
             </LinearLayout>
         </FrameLayout>
 
@@ -65,7 +81,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/editFrame"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:orientation="vertical"

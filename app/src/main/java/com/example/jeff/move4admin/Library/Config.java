@@ -15,6 +15,8 @@ public class Config {
     public static String INSERTCATEGORY = "http://playground.m4mapp.com/beacons/addcategory.php";
     public static String INSERTPRODUCT = "http://playground.m4mapp.com/beacons/addproduct.php";
     public static String DELETECATEGORY = "http://playground.m4mapp.com/beacons/deletecategory.php";
+    public static String DELETEPRODUCT = "http://playground.m4mapp.com/beacons/deleteproduct.php";
+
 
 
 }

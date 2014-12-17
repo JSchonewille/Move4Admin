@@ -60,7 +60,7 @@ public class ProductAdapter extends BaseAdapter {
             view = mInflater.inflate(R.layout.row_layout, viewGroup, false);
             holder = new ViewHolder();
             holder.avatar = (ImageView)view.findViewById(R.id.avatar);
-            holder.name = (TextView)view.findViewById(R.id.name);
+            holder.name = (TextView)view.findViewById(R.id.rowLayoutName);
             holder.latestMessage = (TextView)view.findViewById(R.id.latest_message);
             view.setTag(holder);
         } else {

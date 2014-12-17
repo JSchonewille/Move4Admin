@@ -1,9 +1,11 @@
 package com.example.jeff.move4admin.Fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -68,6 +70,7 @@ public class ProductFragment extends Fragment {
     private Menu menu;
     private MenuItem m_add;
     private MenuItem m_save;
+    private MenuItem m_edit;
 
     private ArrayList<Like> categoriesList = new ArrayList<Like>();
     private ArrayList<Product> productList = new ArrayList<Product>();
@@ -80,6 +83,8 @@ public class ProductFragment extends Fragment {
     private ImageView i_addProductImage;
     private TextView t_productNameLabel;
     private TextView t_productDesc;
+    private TextView t_productCategory;
+    private TextView t_productCategoryLabel;
     private Spinner s_productCategory;
     private EditText e_productName;
     private EditText e_productDesc;
@@ -92,15 +97,6 @@ public class ProductFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProductFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ProductFragment newInstance(String param1, String param2) {
         ProductFragment fragment = new ProductFragment();
         Bundle args = new Bundle();
@@ -129,6 +125,7 @@ public class ProductFragment extends Fragment {
         this.menu = menu;
         m_add = menu.findItem(R.id.action_add);
         m_save = menu.findItem(R.id.action_save);
+        m_edit = menu.findItem(R.id.action_edit);
     }
 
     @Override
@@ -136,25 +133,48 @@ public class ProductFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add:
+                // sets the buttons
                 f_viewFrame.setVisibility(View.GONE);
                 f_editFrame.setVisibility(View.VISIBLE);
                 m_add.setVisible(false);
+                m_edit.setVisible(false);
                 m_save.setVisible(true);
+
+                // resets the layout
+                e_productDesc.setText("Description");
+                e_productName.setText("Name");
+                s_productCategory.setSelection(0);
+                i_addProductImage.setImageResource(R.drawable.no_product);
                 return true;
             case R.id.action_save:
-                String name = e_productName.getText().toString();
-                String desc = e_productDesc.getText().toString();
-
-                boolean duplicatevalue = false;
+                final String name = e_productName.getText().toString();
+                final String desc = e_productDesc.getText().toString();
+                boolean duplicate = false;
                 for (Product p : productList) {
-                    if (p.getName().equals(name))
-                    {
-                        duplicatevalue = true;
-                        e_productName.setError("name already exists");
+                    if (p.getName().equals(name)) {
+                        duplicate = true;
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                        alert.setTitle("Overwrite");
+                        alert.setMessage("Product already exists, do you want to overwrite it?");
+                        // Set an EditText view to get user input
+                        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Bitmap b = ((BitmapDrawable) i_addProductImage.getDrawable()).getBitmap();
+                                b = Bitmap.createScaledBitmap(b, 200, 200, false);
+                                String img = base64(i_addProductImage.getDrawable());
+                                int categoryid = categoriesList.get(s_productCategory.getSelectedItemPosition()).getcategoryID();
+                                f_editFrame.setVisibility(View.GONE);
+                                f_viewFrame.setVisibility(View.VISIBLE);
+                                m_save.setVisible(false);
+                                saveProduct(name, categoryid, img, desc, b);
+                            }
+                        });
+                        alert.show();
                         break;
                     }
                 }
-                if (!duplicatevalue) {
+                if (!duplicate) {
                     Bitmap b = ((BitmapDrawable) i_addProductImage.getDrawable()).getBitmap();
                     b = Bitmap.createScaledBitmap(b, 200, 200, false);
                     String img = base64(i_addProductImage.getDrawable());
@@ -164,6 +184,29 @@ public class ProductFragment extends Fragment {
                     m_save.setVisible(false);
                     saveProduct(name, categoryid, img, desc, b);
                 }
+                return true;
+
+
+            case R.id.action_edit:
+                // sets the buttons
+                f_viewFrame.setVisibility(View.GONE);
+                f_editFrame.setVisibility(View.VISIBLE);
+                m_add.setVisible(false);
+                m_edit.setVisible(false);
+                m_save.setVisible(true);
+
+                // resets the layout
+                e_productDesc.setText(t_productDesc.getText());
+                e_productName.setText(t_productNameLabel.getText());
+                int position = 0;
+                for (Like c : categoriesList) {
+                    if (c.getcategoryName().equals(t_productCategory.getText().toString())) {
+                        s_productCategory.setSelection(position);
+                        break;
+                    }
+                    position++;
+                }
+                i_addProductImage.setImageDrawable(i_productImage.getDrawable());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -184,6 +227,8 @@ public class ProductFragment extends Fragment {
         i_productImage = (ImageView) v.findViewById(R.id.i_productImage);
         t_productNameLabel = (TextView) v.findViewById(R.id.t_productLabel);
         t_productDesc = (TextView) v.findViewById(R.id.t_productInfo);
+        t_productCategory = (TextView) v.findViewById(R.id.t_productCategory);
+        t_productCategoryLabel = (TextView) v.findViewById(R.id.t_productCategoryLabel);
         ///////////////////////////////////////////////////////////////////
 
         /////////////////////// edit//////////////////////////////////////
@@ -200,14 +245,12 @@ public class ProductFragment extends Fragment {
             }
         });
         //////////////////////////////////////////////////////////////////
-        getproducts();
         getCategories();
         f_editFrame.setVisibility(View.GONE);
         f_viewFrame.setVisibility(View.VISIBLE);
         return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onProductInteraction(uri);
@@ -216,7 +259,6 @@ public class ProductFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
         int RESULT_CANCELED = 0;
@@ -232,7 +274,6 @@ public class ProductFragment extends Fragment {
                 i_addProductImage.setImageBitmap(b);
 
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -255,13 +296,13 @@ public class ProductFragment extends Fragment {
         mListener = null;
     }
 
-    private void getproducts() {
+    private void getProducts() {
         ServerRequestHandler.getAllProducts(new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray jsonArray) {
+                productList.clear();
                 for (int i = 0; i < jsonArray.length(); i++) {
                     try {
-                        Log.e("test", "jsonobject");
                         JSONObject o = jsonArray.getJSONObject(i);
                         Product p = new Product();
                         int id = o.getInt("id");
@@ -285,7 +326,7 @@ public class ProductFragment extends Fragment {
                             p.setDescription(desc);
                         }
 
-                        p.setCategoryID(id);
+                        p.setProductID(id);
                         p.setName(name);
 
                         productList.add(p);
@@ -294,18 +335,27 @@ public class ProductFragment extends Fragment {
                         Log.e("error", e.toString());
                     }
                 }
-                productList = productList;
+                // set adapter after filling the list of products
                 if (l_productListView != null) {
-                    Log.e("henk", "settingadapter");
+
                     l_productListView.setAdapter(new ProductAdapter(mContext, productList));
                     l_productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            ProductlistClick(adapterView, view, i, l);
+                            // function responsible for the clicks in the product list
+                            productListClick(adapterView, view, i, l);
                             f_viewFrame.setVisibility(View.VISIBLE);
                             f_editFrame.setVisibility(View.GONE);
                             m_save.setVisible(false);
                             m_add.setVisible(true);
+                        }
+                    });
+                    l_productListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            // function responsible for the product list long clicks
+                            productListLongClick(adapterView, view, i, l);
+                            return true;
                         }
                     });
                 }
@@ -319,11 +369,61 @@ public class ProductFragment extends Fragment {
         }, mContext);
     }
 
-    public void ProductlistClick(AdapterView<?> adapterView, View view, int Position, long id) {
+    public void productListLongClick(AdapterView<?> arg0, final View arg1,
+                                     int position, long arg3) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("Delete");
+        alert.setMessage("Do you want to delete this category ?");
+        // Set an EditText view to get user input
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                TextView txtview = (TextView) arg1.findViewById(R.id.rowLayoutName);
+                final String text = txtview.getText().toString();
+                ServerRequestHandler.DeleteProduct(new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        try {
+                            String s = jsonObject.getString("returnvalue");
+                            if (s.equals("succes")) {
+                                getProducts();
+                            } else {
+                                Log.e("error", s);
+                                Log.e("text = ", text);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                    }
+                }, text, mContext);
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+        alert.show();
+    }
+
+    public void productListClick(AdapterView<?> adapterView, View view, int Position, long id) {
         Product p = productList.get(Position);
         t_productNameLabel.setText(p.getName());
+        for (Like c : categoriesList) {
+            if (c.getcategoryID() == p.getCategoryID()) {
+                t_productCategory.setText(c.getcategoryName());
+                t_productCategoryLabel.setVisibility(View.VISIBLE);
+                break;
+            }
+        }
+        m_edit.setVisible(true);
         t_productNameLabel.setVisibility(View.VISIBLE);
-
         t_productDesc.setText(p.getDescription());
 
         try {
@@ -360,6 +460,7 @@ public class ProductFragment extends Fragment {
                 AllCategoriesAdapter ac = new AllCategoriesAdapter(mContext, categories);
                 s_productCategory.setAdapter(ac);
                 categoriesList = categories;
+                getProducts();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -371,36 +472,42 @@ public class ProductFragment extends Fragment {
 
     public void saveProduct(final String name, final int categoryID, final String image, final String desc, final Bitmap bitmap) {
 
-            ServerRequestHandler.uploadProduct(new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-                    try {
-                        String filepath = jsonObject.getString("returnvalue");
-
-                        Product p = new Product();
-                        p.setName(name);
-                        p.setImage(filepath);
-                        p.setDescription(desc);
-                        p.setCategoryID(categoryID);
-                        ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap, filepath);
-                        productList.add(p);
-                        l_productListView.setAdapter(new ProductAdapter(mContext, productList));
-                        m_add.setVisible(true);
+        ServerRequestHandler.uploadProduct(new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                try {
+                    Log.e("returnvalue",jsonObject.getString("returnvalue"));
+                    String filepath = jsonObject.getString("returnvalue");
+                    ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap,filepath);
+                    getProducts();
 
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    for(Like c :categoriesList)
+                    {
+                        if (c.getcategoryID() == categoryID)
+                        {
+                            t_productCategory.setText(c.getcategoryName());
+                            break;
+                        }
                     }
-
+                    t_productDesc.setText(desc);
+                    t_productNameLabel.setText(name);
+                    i_productImage.setImageBitmap(bitmap);
+                    m_add.setVisible(true);
+                    m_edit.setVisible(true);
+                } catch (JSONException e) {
+                    Log.e("error",e.toString());
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    Log.e("error", volleyError.toString());
-                }
-            }, name, categoryID, image, desc, mContext);
-        }
 
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+                Log.e("error", volleyError.toString());
+            }
+        }, name, categoryID, image, desc, mContext);
+    }
 
     public String base64(Drawable d) {
         Bitmap b = ((BitmapDrawable) d).getBitmap();

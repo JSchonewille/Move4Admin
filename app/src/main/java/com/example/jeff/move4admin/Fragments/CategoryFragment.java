@@ -174,7 +174,7 @@ public class CategoryFragment extends Fragment {
         g_likes.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             public boolean onItemLongClick(AdapterView<?> arg0, final View arg1,
-                                           int position, long arg3) {
+                int position, long arg3) {
 
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());

@@ -90,9 +90,7 @@ public class UserFragment extends Fragment {
 
             ContextWrapper cw = new ContextWrapper(getActivity());
             savedPath = cw.getDir("imageDir", Context.MODE_PRIVATE).toString();
-            dbf = DatabaseFunctions.getInstance(getActivity());
-            userlist = dbf.getUsers();
-            userlikes = dbf.getUserLikes();
+
 
         }
     }
@@ -110,14 +108,17 @@ public class UserFragment extends Fragment {
         t_likesLabel =( (TextView) myInflatedView.findViewById(R.id.t_likesLabel));
         g_likes = (GridView) myInflatedView.findViewById(R.id.g_likes);
 
+        dbf = DatabaseFunctions.getInstance(getActivity());
+        userlist = dbf.getUsers();
+        userlikes = dbf.getUserLikes();
+            l_users.setAdapter(new UserAdapter(getActivity(), userlist));
+            l_users.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    UserlistClick(adapterView, view, i, l);
+                }
+            });
 
-        l_users.setAdapter(new UserAdapter(getActivity(),userlist));
-        l_users.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               UserlistClick(adapterView,view,i,l);
-            }
-        });
 
         return myInflatedView;
     }

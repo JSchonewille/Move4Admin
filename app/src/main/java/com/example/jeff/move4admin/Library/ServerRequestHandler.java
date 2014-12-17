@@ -119,6 +119,16 @@ public class ServerRequestHandler {
         RequestController.getInstance(c).addToRequestQueue(request);
     }
 
+    public static void DeleteProduct(Response.Listener<JSONObject> l, Response.ErrorListener el, final String name,Context c){
+        String URL = Config.DELETEPRODUCT;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("name", name);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
 
 
     public String saveImage(byte[] byteArray) {
