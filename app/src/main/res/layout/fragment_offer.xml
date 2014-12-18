@@ -1,13 +1,160 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.jeff.move4admin.Fragments.OfferFragment">
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/move4black">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
+    <ListView
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:text="Offers" />
+        android:id="@+id/offerList"
+        android:layout_weight="0.2"
+        android:footerDividersEnabled="true" />
 
-</FrameLayout>
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.8">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.8"
+            android:id="@+id/offerViewFrame"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/t_offerIDLabel"
+                        android:gravity="center"
+                        android:textColor="@android:color/white"
+                        android:autoText="false"
+                        android:background="@color/move4darker"
+                        android:visibility="invisible"
+                        android:layout_weight="0.1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/t_offerLabel"
+                        android:gravity="center"
+                        android:textColor="@android:color/white"
+                        android:autoText="false"
+                        android:background="@color/move4darker"
+                        android:visibility="invisible"
+                        android:layout_weight="0.9" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="260dp">
+
+                    <ImageView
+                        android:layout_width="259dp"
+                        android:layout_height="259dp"
+                        android:id="@+id/i_offerImage" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Category: "
+                        android:id="@+id/t_offerCategoryLabel"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:id="@+id/t_offerCategory"
+                        android:layout_marginLeft="10dp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/t_offerInfo" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/offerEditFrame"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/t_addOfferLabel"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:autoText="false"
+                    android:background="@color/move4darker"
+                    android:visibility="invisible" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="260dp">
+
+                    <ImageView
+                        android:layout_width="259dp"
+                        android:layout_height="259dp"
+                        android:id="@+id/i_OfferaddImage"
+                        android:background="@android:drawable/ic_menu_camera" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/s_addOfferCategory"
+                            android:layout_gravity="center_vertical" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/e_addOfferDesc"
+                    android:text="Description"
+                    android:gravity="left" />
+            </LinearLayout>
+        </FrameLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

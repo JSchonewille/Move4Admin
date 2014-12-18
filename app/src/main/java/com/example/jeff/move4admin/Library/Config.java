@@ -11,11 +11,15 @@ public class Config {
     public static String GETALLLIKES = "http://playground.m4mapp.com/beacons/getalllikes.php";
     public static String GETALLCATEGORIES = "http://playground.m4mapp.com/beacons/getcategories.php";
     public static String GETALLPRODUCTS = "http://playground.m4mapp.com/beacons/getallproducts.php";
+    public static String GETALLOFFERS = "http://playground.m4mapp.com/beacons/getalloffers.php";
 
     public static String INSERTCATEGORY = "http://playground.m4mapp.com/beacons/addcategory.php";
     public static String INSERTPRODUCT = "http://playground.m4mapp.com/beacons/addproduct.php";
+    public static String INSERTOFFER = "http://playground.m4mapp.com/beacons/addoffer.php";
+
     public static String DELETECATEGORY = "http://playground.m4mapp.com/beacons/deletecategory.php";
     public static String DELETEPRODUCT = "http://playground.m4mapp.com/beacons/deleteproduct.php";
+    public static String DELETEOFFER = "http://playground.m4mapp.com/beacons/deleteoffer.php";
 
 
 

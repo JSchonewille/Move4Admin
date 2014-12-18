@@ -221,8 +221,8 @@ public class ProductFragment extends Fragment {
         cw = new ContextWrapper(getActivity());
         savedPath = cw.getDir("imageDir", Context.MODE_PRIVATE).toString();
         /////////////////////// view///////////////////////////////////////
-        f_viewFrame = (FrameLayout) v.findViewById(R.id.viewFrame);
-        f_editFrame = (FrameLayout) v.findViewById(R.id.editFrame);
+        f_viewFrame = (FrameLayout) v.findViewById(R.id.productViewFrame);
+        f_editFrame = (FrameLayout) v.findViewById(R.id.productEditFrame);
         l_productListView = (ListView) v.findViewById(R.id.productList);
         i_productImage = (ImageView) v.findViewById(R.id.i_productImage);
         t_productNameLabel = (TextView) v.findViewById(R.id.t_productLabel);

@@ -77,6 +77,14 @@ public class ServerRequestHandler {
         RequestController.getInstance(c).addToRequestQueue(req);
     }
 
+    public static void getAllOffers(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
+        String URL = Config.GETALLOFFERS;
+
+        JsonArrayRequest req = new JsonArrayRequest(URL, l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(req);
+    }
+
     public static void getAllProducts(Response.Listener<JSONArray> l, Response.ErrorListener el, Context c) {
         String URL = Config.GETALLPRODUCTS;
 
@@ -89,6 +97,31 @@ public class ServerRequestHandler {
         String URL = Config.INSERTPRODUCT;
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("name", productName);
+        params.put("categoryID",Integer.toString(categoryID));
+        params.put("image", image);
+        params.put("description", description);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
+    public static void uploadOffer(Response.Listener<JSONObject> l, Response.ErrorListener el, final int categoryID, final String image, final String description, Context c){
+        String URL = Config.INSERTOFFER;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("categoryID",Integer.toString(categoryID));
+        params.put("image", image);
+        params.put("description", description);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
+    public static void uploadOffer(Response.Listener<JSONObject> l, Response.ErrorListener el,final int productID, final int categoryID, final String image, final String description, Context c){
+        String URL = Config.INSERTOFFER;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("offerID",Integer.toString(productID));
         params.put("categoryID",Integer.toString(categoryID));
         params.put("image", image);
         params.put("description", description);
@@ -123,6 +156,15 @@ public class ServerRequestHandler {
         String URL = Config.DELETEPRODUCT;
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("name", name);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+    public static void DeleteOffer(Response.Listener<JSONObject> l, Response.ErrorListener el, final String id,Context c){
+        String URL = Config.DELETEOFFER;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("id", id);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
         //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
 
