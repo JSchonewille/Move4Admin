@@ -25,6 +25,9 @@ public class DatabaseFunctions {
     private static final String TABLE_USERLIKES = " userlikes ";
     private static final String TABLE_ALLLIKES = " alllikes ";
     private static final String TABLE_ALLUSERS = " allusers ";
+    private static final String TABLE_BEACONLOCATIONS = " beaconlocations ";
+    private static final String TABLE_BEACONBACKGROUND = " beaconbackground ";
+
 
 
     private SQLiteOpenHelper sqLiteOpenHelper;
@@ -41,6 +44,14 @@ public class DatabaseFunctions {
     // all categories Column names
     private static final String KEY_ALLCATEGORYID = "categoryID";
     private static final String KEY_ALLCATEGORYNAME = "categoryName";
+
+    //Beacon locations column names
+    private static final String KEY_BEACONMAJOR = "major";
+    private static final String KEY_BEACONMINOR = "minor";
+    private static final String KEY_BEACONLOCATIONX = "x";
+    private static final String KEY_BEACONLOCATIONY = "y";
+    //Beacon locations column names
+    private static final String KEY_BEACONBACKGROUND = "background";
     //endregion
 
     //create instance
@@ -68,17 +79,17 @@ public class DatabaseFunctions {
                 db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERLIKES);
                 db.execSQL("DROP TABLE IF EXISTS " + TABLE_ALLUSERS);
                 db.execSQL("DROP TABLE IF EXISTS " + TABLE_ALLLIKES);
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEACONLOCATIONS);
                 // Create tables again
                 onCreate(db);
             }
         };
-       sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_USERLIKES);
-       sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ALLUSERS);
-       sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ALLLIKES);
+//       sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_USERLIKES);
+//       sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ALLUSERS);
+//       sqLiteOpenHelper.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_ALLLIKES);
        createTables(sqLiteOpenHelper.getWritableDatabase());
 
     }
-
 
     public void addUserLikes(int id, String categoryName) {
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
@@ -86,6 +97,26 @@ public class DatabaseFunctions {
         values.put(KEY_USERID, id); //
         values.put(KEY_CATEGORYNAME, categoryName); //
         db.insert(TABLE_USERLIKES, null, values);
+        db.close(); // Closing database connection
+    }
+    public void addBeaconBackground(String bc) {
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        db.delete(TABLE_BEACONBACKGROUND,"1=1",null );
+        ContentValues values = new ContentValues();
+        values.put(KEY_BEACONBACKGROUND, bc); //
+        db.insert(TABLE_BEACONBACKGROUND, null, values);
+        db.close(); // Closing database connection
+    }
+
+    public void addBeaconLocation(int major, int minor, int x , int y) {
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        db.delete(TABLE_BEACONLOCATIONS,KEY_BEACONMAJOR + " = " + major + " AND " + KEY_BEACONMINOR + " = " + minor,null );
+        ContentValues values = new ContentValues();
+        values.put(KEY_BEACONLOCATIONX, x); //
+        values.put(KEY_BEACONLOCATIONY, y); //
+        values.put(KEY_BEACONMAJOR, major); //
+        values.put(KEY_BEACONMINOR, minor); //
+        db.insert(TABLE_BEACONLOCATIONS,null,values);
         db.close(); // Closing database connection
     }
 
@@ -100,6 +131,7 @@ public class DatabaseFunctions {
         values.put(KEY_USERCREATED, created); //
         db.insert(TABLE_ALLUSERS, null, values);
         db.close(); // Closing database connection
+        //db.delete()
     }
 
     public void addALLCategory(String name)
@@ -153,6 +185,51 @@ public class DatabaseFunctions {
         db.close();
         // return category list
         return users;
+    }
+
+    public String getBeaconBackground(){
+
+        String output = "";
+        String selectQuery = "SELECT * FROM " + TABLE_BEACONBACKGROUND;
+        SQLiteDatabase db = sqLiteOpenHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0){
+            do {
+                output = cursor.getString(0);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return output;
+    }
+
+    public ArrayList<BeaconDrawable> getBeaconLocations(){
+
+        ArrayList<BeaconDrawable> beaconLocations = new ArrayList<BeaconDrawable>();
+
+        String selectQuery = "SELECT * FROM " + TABLE_BEACONLOCATIONS;
+        SQLiteDatabase db = sqLiteOpenHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0){
+            do {
+                BeaconDrawable bd =  new BeaconDrawable();
+                bd.setMajor(Integer.parseInt(cursor.getString(0)));
+                bd.setMinor(Integer.parseInt(cursor.getString(1)));
+                bd.setX(Integer.parseInt(cursor.getString(2)));
+                bd.setY(Integer.parseInt(cursor.getString(3)));
+                beaconLocations.add(bd);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        // return category list
+        return beaconLocations;
     }
 
 
@@ -269,13 +346,24 @@ public class DatabaseFunctions {
      * */
 
     public void createTables(SQLiteDatabase db){
-        String CREATE_LIKES_TABLE = "CREATE TABLE " + TABLE_USERLIKES + "("
+        String CREATE_LIKES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERLIKES + "("
                 + KEY_USERID + " INTEGER, "
                 + KEY_CATEGORYNAME + " TEXT " +")";
         db.execSQL(CREATE_LIKES_TABLE);
 
+        String CREATE_BEACONBACKGROUND_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_BEACONBACKGROUND + "("
+                + KEY_BEACONBACKGROUND + " TEXT " +")";
+        db.execSQL(CREATE_BEACONBACKGROUND_TABLE);
 
-        String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_ALLUSERS + "("
+        String CREATE_BEACONLOCATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_BEACONLOCATIONS + "("
+                + KEY_BEACONMAJOR + " INTEGER, "
+                + KEY_BEACONMINOR + " INTEGER, "
+                + KEY_BEACONLOCATIONX + " INTEGER, "
+                + KEY_BEACONLOCATIONY + " INTEGER " +")";
+        db.execSQL(CREATE_BEACONLOCATIONS_TABLE);
+
+
+        String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_ALLUSERS + "("
                 + KEY_USER + " INTEGER, "
                 + KEY_PROFILEIMAGE + " TEXT, "
                 + KEY_USERNAME + " TEXT, "
@@ -285,7 +373,7 @@ public class DatabaseFunctions {
         db.execSQL(CREATE_USER_TABLE);
 
 
-        String CREATE_ALLLIKES_TABLE = "CREATE TABLE " + TABLE_ALLLIKES + "("
+        String CREATE_ALLLIKES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_ALLLIKES + "("
                 + KEY_ALLCATEGORYID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + KEY_ALLCATEGORYNAME + " TEXT " +")";
         db.execSQL(CREATE_ALLLIKES_TABLE);

@@ -82,6 +82,7 @@ public class ProductFragment extends Fragment {
     private ImageView i_productImage;
     private ImageView i_addProductImage;
     private TextView t_productNameLabel;
+    private TextView t_addProductLabel;
     private TextView t_productDesc;
     private TextView t_productCategory;
     private TextView t_productCategoryLabel;
@@ -133,6 +134,9 @@ public class ProductFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add:
+                // reset the labels we use for showing when we edit something
+                t_addProductLabel.setText("");
+                t_addProductLabel.setVisibility(View.VISIBLE);
                 // sets the buttons
                 f_viewFrame.setVisibility(View.GONE);
                 f_editFrame.setVisibility(View.VISIBLE);
@@ -196,6 +200,8 @@ public class ProductFragment extends Fragment {
                 m_save.setVisible(true);
 
                 // resets the layout
+                t_addProductLabel.setText(t_productNameLabel.getText());
+                t_addProductLabel.setVisibility(View.VISIBLE);
                 e_productDesc.setText(t_productDesc.getText());
                 e_productName.setText(t_productNameLabel.getText());
                 int position = 0;
@@ -234,6 +240,7 @@ public class ProductFragment extends Fragment {
         /////////////////////// edit//////////////////////////////////////
         e_productDesc = (EditText) v.findViewById(R.id.e_addProductDesc);
         e_productName = (EditText) v.findViewById(R.id.e_addProductName);
+        t_addProductLabel = (TextView) v.findViewById(R.id.t_addProductLabel);
         s_productCategory = (Spinner) v.findViewById(R.id.s_addProductCategory);
         i_addProductImage = (ImageView) v.findViewById(R.id.i_addImage);
         i_addProductImage.setOnClickListener(new View.OnClickListener() {

@@ -1,13 +1,40 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.jeff.move4admin.Fragments.BeaconFragment">
+    tools:context="com.example.jeff.move4admin.Fragments.BeaconFragment"
+    android:id="@+id/toplayout"
+    android:orientation="horizontal">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Beacon" />
 
-</FrameLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.16">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/beaconList"
+            android:layout_gravity="center_horizontal|top" />
+    </FrameLayout>
+
+    <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.8"
+        android:id="@+id/f_starFrame">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/i_star"
+                android:src="@android:drawable/star_big_off"
+                android:focusableInTouchMode="false"
+                android:visibility="gone" />
+        </FrameLayout>
+
+</LinearLayout>
+

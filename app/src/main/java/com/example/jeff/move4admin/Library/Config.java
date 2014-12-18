@@ -12,6 +12,7 @@ public class Config {
     public static String GETALLCATEGORIES = "http://playground.m4mapp.com/beacons/getcategories.php";
     public static String GETALLPRODUCTS = "http://playground.m4mapp.com/beacons/getallproducts.php";
     public static String GETALLOFFERS = "http://playground.m4mapp.com/beacons/getalloffers.php";
+    public static String GETALLBEACONS = "http://playground.m4mapp.com/beacons/getbeacons.php";
 
     public static String INSERTCATEGORY = "http://playground.m4mapp.com/beacons/addcategory.php";
     public static String INSERTPRODUCT = "http://playground.m4mapp.com/beacons/addproduct.php";

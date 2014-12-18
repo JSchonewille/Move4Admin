@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:yourapp="http://schemas.android.com/tools">
 
+    <item android:id="@+id/action_options"
+        android:title="Edit"
+        android:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:visible="false"/>
+
     <item android:id="@+id/action_edit"
         android:title="Edit"
         android:showAsAction="always"

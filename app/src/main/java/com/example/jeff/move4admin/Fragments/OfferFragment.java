@@ -139,7 +139,7 @@ public class OfferFragment extends Fragment {
             case R.id.action_add:
                 // reset the labels we use for showing when we edit something
                 t_addOfferLabel.setText("");
-                t_addOfferLabel.setVisibility(View.INVISIBLE);
+                t_addOfferLabel.setVisibility(View.VISIBLE);
                 // sets the buttons
                 f_viewFrame.setVisibility(View.GONE);
                 f_editFrame.setVisibility(View.VISIBLE);
@@ -298,7 +298,7 @@ public class OfferFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
+       super.onDetach();
         mListener = null;
     }
 
