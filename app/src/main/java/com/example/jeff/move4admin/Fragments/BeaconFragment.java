@@ -37,6 +37,9 @@ import com.android.volley.VolleyError;
 import com.example.jeff.move4admin.Library.Beacon;
 import com.example.jeff.move4admin.Library.BeaconDrawable;
 import com.example.jeff.move4admin.Library.DatabaseFunctions;
+import com.example.jeff.move4admin.Library.Like;
+import com.example.jeff.move4admin.Library.Offer;
+import com.example.jeff.move4admin.Library.Product;
 import com.example.jeff.move4admin.Library.ServerRequestHandler;
 import com.example.jeff.move4admin.Library.adapters.BeaconAdapter;
 import com.example.jeff.move4admin.R;
@@ -78,8 +81,14 @@ public class BeaconFragment extends Fragment {
     private Context mContext;
     private ArrayList<Beacon> beaconList = new ArrayList<Beacon>();
     private ArrayList<BeaconDrawable> screenBeaconList = new ArrayList<BeaconDrawable>();
+    private ArrayList<Offer> offerList =  new ArrayList<Offer>();
+    private ArrayList<Product> productList =  new ArrayList<Product>();
+    private ArrayList<Like> categoryList =  new ArrayList<Like>();
     private BeaconAdapter beaconAdapter;
     private Boolean infoscreenOpen = false;
+    private Boolean initDone = false;
+    private Boolean firstSelection = false;
+    private String savedPath;
 
     // all infoscreen variables
     private Button b_infoClose;
@@ -87,6 +96,13 @@ public class BeaconFragment extends Fragment {
     private TextView t_infoMinor;
     private TextView t_infoProductID;
     private TextView t_infoOfferID;
+    private TextView t_infoProductName;
+    private TextView t_infoProductCategory;
+    private TextView t_infoProductDesc;
+    private TextView t_infoOfferCategory;
+    private TextView t_infoOfferDesc;
+    private ImageView i_infoProductImage;
+    private ImageView i_infoOfferImage;
 
     private ListView l_beaconListView;
     private ImageView i_star;
@@ -141,7 +157,6 @@ public class BeaconFragment extends Fragment {
             case R.id.action_save:
                 return true;
             case R.id.action_edit:
-                showSlide();
                 return true;
             case R.id.action_options:
                 Intent intent = new Intent(Intent.ACTION_PICK,
@@ -190,7 +205,6 @@ public class BeaconFragment extends Fragment {
         m_edit = menu.findItem(R.id.action_edit);
         m_options = menu.findItem(R.id.action_options);
         m_info = menu.findItem(R.id.action_info);
-        m_add.setVisible(true);
         m_options.setVisible(true);
     }
 
@@ -198,6 +212,8 @@ public class BeaconFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        cw = new ContextWrapper(getActivity());
+        savedPath = cw.getDir("imageDir", Context.MODE_PRIVATE).toString();
         View v = inflater.inflate(R.layout.fragment_beacon, container, false);
         cw = new ContextWrapper(getActivity());
         i_star = (ImageView) v.findViewById(R.id.i_star);
@@ -210,6 +226,15 @@ public class BeaconFragment extends Fragment {
         t_infoMinor = (TextView) v.findViewById(R.id.t_infoMinorLabel);
         t_infoOfferID = (TextView) v.findViewById(R.id.t_infoOfferIDLabel);
         t_infoProductID = (TextView) v.findViewById(R.id.t_infoProductIDLabel);
+
+       t_infoProductName = (TextView) v.findViewById(R.id.t_infoProductNameLabel);
+       t_infoProductCategory = (TextView) v.findViewById(R.id.t_infoProductCategory);
+       t_infoProductDesc = (TextView) v.findViewById(R.id.t_infoProductDescription);
+       t_infoOfferCategory = (TextView) v.findViewById(R.id.t_infoOfferCategory);
+       t_infoOfferDesc = (TextView) v.findViewById(R.id.t_infoOfferDesc);
+       i_infoProductImage = (ImageView) v.findViewById(R.id.i_infoProductImage);
+       i_infoOfferImage = (ImageView) v.findViewById(R.id.i_infoOfferImage);
+
 
         String beaconsFrameBackground = DatabaseFunctions.getInstance(mContext).getBeaconBackground();
 
@@ -244,7 +269,7 @@ public class BeaconFragment extends Fragment {
             }
         });
 
-
+        initProductOffer();
         getbeacons();
 
         return v;
@@ -511,9 +536,11 @@ public class BeaconFragment extends Fragment {
 
     public void setSelection(int input) {
         // this function sets our list on selected and sets the image
-
-        m_info.setVisible(true);
-        m_edit.setVisible(true);
+        firstSelection =  true;
+        if(initDone) {
+            m_info.setVisible(true);
+            m_edit.setVisible(true);
+        }
         int length = beaconList.size();
 
 
@@ -532,20 +559,208 @@ public class BeaconFragment extends Fragment {
 
     }
 
+    public void initProductOffer()
+    {
+        ServerRequestHandler.getAllProducts(new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+                productList.clear();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+                        JSONObject o = jsonArray.getJSONObject(i);
+                        Product p = new Product();
+                        int id = o.getInt("id");
+                        String name = o.getString("name");
+                        int cat;
+                        String image;
+                        String desc;
+
+                        if (!o.isNull("categoryID")) {
+                            cat = o.getInt("categoryID");
+                            p.setCategoryID(cat);
+                        }
+
+                        if (!o.isNull("image")) {
+                            image = o.getString("image");
+                            p.setImage(image);
+                        }
+
+                        if (!o.isNull("description")) {
+                            desc = o.getString("description");
+                            p.setDescription(desc);
+                        }
+
+                        p.setProductID(id);
+                        p.setName(name);
+
+                        productList.add(p);
+
+                    } catch (Exception e) {
+                        Log.e("error", e.toString());
+                    }
+                }
+                ServerRequestHandler.getAllOffers(new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        offerList.clear();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            try {
+                                JSONObject o = jsonArray.getJSONObject(i);
+                                Offer offer = new Offer();
+                                int id = o.getInt("id");
+                                int cat;
+                                String image;
+                                String desc;
+
+                                if (!o.isNull("category")) {
+                                    cat = o.getInt("category");
+                                    offer.setCategoryID(cat);
+                                }
+
+                                if (!o.isNull("image")) {
+                                    image = o.getString("image");
+                                    offer.setImage(image);
+                                }
+
+                                if (!o.isNull("description")) {
+                                    desc = o.getString("description");
+                                    offer.setDescription(desc);
+                                }
+
+                                offer.setOfferID(id);
+
+
+                                offerList.add(offer);
+
+                            } catch (Exception e) {
+                                Log.e("error", e.toString());
+                            }
+                        }
+
+                       ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
+                           @Override
+                           public void onResponse(JSONArray jsonArray) {
+                               for (int i = 0; i < jsonArray.length(); i++) {
+                                   try {
+                                       JSONObject o = jsonArray.getJSONObject(i);
+                                       int id = o.getInt("id");
+                                       String like = o.getString("name");
+                                       Like l = new Like(id,like);
+                                       categoryList.add(l);
+                                   }
+                                   catch (Exception e)
+                                   {
+
+                                   }
+                               }
+                               // logica for when everything has loaded
+                               initDone = true;
+                               m_add.setVisible(true);
+                               if (firstSelection) {
+                                   m_edit.setVisible(true);
+                                   m_info.setVisible(true);
+
+                               }
+                           }
+                       },new Response.ErrorListener() {
+                           @Override
+                           public void onErrorResponse(VolleyError volleyError) {
+
+                           }
+                       },mContext);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                    }
+                }, mContext);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }, mContext);
+    }
     public void setInfo(int input)
     {
-        Beacon b = beaconList.get(input);
+        if(initDone) {
+            Beacon b = beaconList.get(input);
+            Offer beaconOffer = new Offer();
+            Product beaconProduct = new Product();
+            String offerCategory = "";
+            String productCategory = "";
 
-        int major = b.getMajor();
-        int minor = b.getMinor();
-        int OfferID = b.getOfferID();
-        int productID = b.getProductID();
+                for (Offer of : offerList)
+                {
+                    if(of.getOfferID() == b.getOfferID())
+                    {
+                        beaconOffer = of;
+                        for(Like cat : categoryList)
+                        {
+                            if (cat.getcategoryID() == of.getCategoryID())
+                            {
+                                offerCategory = cat.getcategoryName();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            for (Product pr : productList)
+            {
+                if ( pr.getProductID() == b.getProductID())
+                {
+                    beaconProduct = pr;
+                    for (Like l : categoryList)
+                    {
+                        if (l.getcategoryID() == pr.getCategoryID())
+                        {
+                            productCategory = l.getcategoryName();
+                        }
+                    }
+                    break;
+                }
+            }
+            int major = b.getMajor();
+            int minor = b.getMinor();
+            int OfferID = b.getOfferID();
+            int productID = b.getProductID();
 
-        t_infoMajor.setText("Major: " + Integer.toString(major));
-        t_infoMinor.setText("Minor: " + Integer.toString(minor));
-        t_infoProductID.setText("Product id: " + Integer.toString(productID));
-        t_infoOfferID.setText("Offer id: " + Integer.toString(OfferID));
+            t_infoMajor.setText("Major: " + Integer.toString(major));
+            t_infoMinor.setText("Minor: " + Integer.toString(minor));
+            t_infoProductID.setText("Product id: " + Integer.toString(productID));
+            t_infoOfferID.setText("Offer id: " + Integer.toString(OfferID));
+            t_infoProductName.setText("Name: " + beaconProduct.getName());
+            t_infoProductCategory.setText("Category: " + productCategory);
+            t_infoOfferCategory.setText("Category: " + offerCategory );
+            t_infoProductDesc.setText(beaconProduct.getDescription());
+            t_infoOfferDesc.setText(beaconOffer.getDescription());
+           ;
+            try {
+                File f = new File(savedPath, beaconProduct.getImage().substring(7));
+                Bitmap b1 = BitmapFactory.decodeStream(new FileInputStream(f));
+               //b1 = Bitmap.createScaledBitmap(b1, 800, 800, true);
+                i_infoProductImage.setImageBitmap(b1);
+            } catch (Exception e) {
+                Bitmap noimg1 = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.no_product);
+                //noimg1 = Bitmap.createScaledBitmap(noimg1, 800, 800, true);
+                i_infoProductImage.setImageBitmap(noimg1);
+            }
 
+            try {
+                File f = new File(savedPath, beaconOffer.getImage().substring(7));
+                Bitmap b2 = BitmapFactory.decodeStream(new FileInputStream(f));
+               // b2 = Bitmap.createScaledBitmap(b2, 800, 800, true);
+                i_infoOfferImage.setImageBitmap(b2);
+            } catch (Exception e) {
+                Bitmap noimg2 = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.no_product);
+                //noimg2 = Bitmap.createScaledBitmap(noimg2, 800, 800, true);
+                i_infoOfferImage.setImageBitmap(noimg2);
+            }
+
+        }
     }
     public void setEdit(int input)
     {

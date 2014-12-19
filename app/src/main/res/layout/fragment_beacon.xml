@@ -118,9 +118,11 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/imageView2"
+                            android:id="@+id/i_infoProductImage"
                             android:minHeight="150dp"
-                            android:minWidth="150dp" />
+                            android:minWidth="150dp"
+                            android:maxHeight="150dp"
+                            android:maxWidth="150dp" />
 
                         <RelativeLayout
                             android:orientation="vertical"
@@ -139,7 +141,7 @@
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:text="Category :"
-                                android:id="@+id/t_infoCategoryNameLabel"
+                                android:id="@+id/t_infoProductCategory"
                                 android:layout_below="@+id/t_infoProductNameLabel"
                                 android:layout_alignParentStart="true" />
 
@@ -148,8 +150,8 @@
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:text="description"
-                                android:id="@+id/t_infoDescriptionLabel"
-                                android:layout_below="@+id/t_infoCategoryNameLabel"
+                                android:id="@+id/t_infoProductDescriptionLabel"
+                                android:layout_below="@+id/t_infoProductCategory"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="20dp" />
 
@@ -158,8 +160,8 @@
                                 android:layout_height="match_parent"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:text="description"
-                                android:id="@+id/t_infoDescription"
-                                android:layout_below="@+id/t_infoDescriptionLabel"
+                                android:id="@+id/t_infoProductDescription"
+                                android:layout_below="@+id/t_infoProductDescriptionLabel"
                                 android:layout_alignParentStart="true" />
 
                         </RelativeLayout>
@@ -199,7 +201,9 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/i_infoOfferImage"
                             android:minHeight="150dp"
-                            android:minWidth="150dp" />
+                            android:minWidth="150dp"
+                            android:maxHeight="150dp"
+                            android:maxWidth="150dp" />
 
                         <RelativeLayout
                             android:orientation="vertical"
