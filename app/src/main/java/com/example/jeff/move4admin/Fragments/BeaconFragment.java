@@ -94,6 +94,7 @@ public class BeaconFragment extends Fragment {
 
     // all infoscreen variables
     private Button b_infoClose;
+    private Button b_editClose;
     private TextView t_infoMajor;
     private TextView t_infoMinor;
     private TextView t_infoProductID;
@@ -154,16 +155,22 @@ public class BeaconFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add:
+                infoLinearLayout.setVisibility(View.GONE);
                 editLinearLayout.setVisibility(View.VISIBLE);
+                clearSelection();
+                showSlide();
                 return true;
             case R.id.action_info:
+                editLinearLayout.setVisibility(View.GONE);
                 infoLinearLayout.setVisibility(View.VISIBLE);
                 showSlide();
                 return true;
             case R.id.action_save:
                 return true;
             case R.id.action_edit:
+                infoLinearLayout.setVisibility(View.GONE);
                 editLinearLayout.setVisibility(View.VISIBLE);
+                showSlide();
                 return true;
             case R.id.action_options:
                 Intent intent = new Intent(Intent.ACTION_PICK,
@@ -229,6 +236,7 @@ public class BeaconFragment extends Fragment {
         slideInFrame = (FrameLayout) v.findViewById(R.id.f_beaconSlideinSceen);
         slideInFrame.setVisibility(View.GONE);
         b_infoClose = (Button) v.findViewById(R.id.b_infoClose);
+        b_editClose = (Button) v.findViewById(R.id.b_beaconEditClose);
         t_infoMajor = (TextView) v.findViewById(R.id.t_infoMajorLabel);
         t_infoMinor = (TextView) v.findViewById(R.id.t_infoMinorLabel);
         t_infoOfferID = (TextView) v.findViewById(R.id.t_infoOfferIDLabel);
@@ -280,7 +288,12 @@ public class BeaconFragment extends Fragment {
                 hideSlide();
             }
         });
-
+        b_editClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideSlide();
+            }
+        });
         initProductOffer();
         getbeacons();
 
@@ -570,6 +583,16 @@ public class BeaconFragment extends Fragment {
         }
 
     }
+
+    public void clearSelection() {
+        // this function sets our list on selected and sets the image
+        int length = beaconList.size();
+        for (int i = 0; i < length; i++) {
+                l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.transparent);
+                screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_off);
+            }
+        m_edit.setVisible(false);
+        }
 
     public void initProductOffer()
     {
