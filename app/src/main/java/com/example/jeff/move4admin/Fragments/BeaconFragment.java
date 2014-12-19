@@ -22,10 +22,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -58,7 +63,6 @@ public class BeaconFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String IMAGEVIEW_TAG = "The Android Logo";
 
 
     // TODO: Rename and change types of parameters
@@ -67,16 +71,27 @@ public class BeaconFragment extends Fragment {
 
     private Menu menu;
     private MenuItem m_add;
+    private MenuItem m_info;
     private MenuItem m_save;
     private MenuItem m_edit;
     private MenuItem m_options;
     private Context mContext;
     private ArrayList<Beacon> beaconList = new ArrayList<Beacon>();
     private ArrayList<BeaconDrawable> screenBeaconList = new ArrayList<BeaconDrawable>();
+    private BeaconAdapter beaconAdapter;
+    private Boolean infoscreenOpen = false;
+
+    // all infoscreen variables
+    private Button b_infoClose;
+    private TextView t_infoMajor;
+    private TextView t_infoMinor;
+    private TextView t_infoProductID;
+    private TextView t_infoOfferID;
 
     private ListView l_beaconListView;
     private ImageView i_star;
-    private FrameLayout starFrame;
+    private FrameLayout drawFrame;
+    private FrameLayout slideInFrame;
     private ContextWrapper cw;
 
     private OnFragmentInteractionListener mListener;
@@ -120,9 +135,13 @@ public class BeaconFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_add:
                 return true;
+            case R.id.action_info:
+                showSlide();
+                return true;
             case R.id.action_save:
                 return true;
             case R.id.action_edit:
+                showSlide();
                 return true;
             case R.id.action_options:
                 Intent intent = new Intent(Intent.ACTION_PICK,
@@ -148,7 +167,7 @@ public class BeaconFragment extends Fragment {
                 bitmap = BitmapFactory.decodeStream(cw.getContentResolver().openInputStream(targetUri));
                 Bitmap b = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
                 BitmapDrawable dr = new BitmapDrawable(getResources(), b);
-                starFrame.setBackground(dr);
+                drawFrame.setBackground(dr);
                 Time t = new Time();
                 t.setToNow();
                 String filepath = t.format3339(false) + ".jpg";
@@ -170,7 +189,8 @@ public class BeaconFragment extends Fragment {
         m_save = menu.findItem(R.id.action_save);
         m_edit = menu.findItem(R.id.action_edit);
         m_options = menu.findItem(R.id.action_options);
-        m_add.setVisible(false);
+        m_info = menu.findItem(R.id.action_info);
+        m_add.setVisible(true);
         m_options.setVisible(true);
     }
 
@@ -182,8 +202,14 @@ public class BeaconFragment extends Fragment {
         cw = new ContextWrapper(getActivity());
         i_star = (ImageView) v.findViewById(R.id.i_star);
         l_beaconListView = (ListView) v.findViewById(R.id.beaconList);
-        starFrame = (FrameLayout) v.findViewById(R.id.f_starFrame);
-        i_star.setTag(IMAGEVIEW_TAG);
+        drawFrame = (FrameLayout) v.findViewById(R.id.f_starFrame);
+        slideInFrame = (FrameLayout) v.findViewById(R.id.f_beaconSlideinSceen);
+        slideInFrame.setVisibility(View.GONE);
+        b_infoClose = (Button) v.findViewById(R.id.b_infoClose);
+        t_infoMajor = (TextView) v.findViewById(R.id.t_infoMajorLabel);
+        t_infoMinor = (TextView) v.findViewById(R.id.t_infoMinorLabel);
+        t_infoOfferID = (TextView) v.findViewById(R.id.t_infoOfferIDLabel);
+        t_infoProductID = (TextView) v.findViewById(R.id.t_infoProductIDLabel);
 
         String beaconsFrameBackground = DatabaseFunctions.getInstance(mContext).getBeaconBackground();
 
@@ -192,12 +218,12 @@ public class BeaconFragment extends Fragment {
                 File f = new File(cw.getDir("imageDir", Context.MODE_PRIVATE).toString(), beaconsFrameBackground);
                 Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
                 BitmapDrawable dr = new BitmapDrawable(getResources(), b);
-                starFrame.setBackground(dr);
+                drawFrame.setBackground(dr);
             } catch (FileNotFoundException e) {
                 Log.e("file not found", "could not find file " + beaconsFrameBackground);
             }
         }
-        starFrame.setOnDragListener(new View.OnDragListener() {
+        drawFrame.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
                 return viewDrag(view, dragEvent);
@@ -207,9 +233,17 @@ public class BeaconFragment extends Fragment {
         l_beaconListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                beaconListClick(adapterView,view,i,l);
+                beaconListClick(adapterView, view, i, l);
             }
         });
+
+        b_infoClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideSlide();
+            }
+        });
+
 
         getbeacons();
 
@@ -241,7 +275,19 @@ public class BeaconFragment extends Fragment {
         mListener = null;
     }
 
-    private boolean viewClick(View view) {
+    private void viewClick(View v) {
+        int i = 0;
+        for (BeaconDrawable bd : screenBeaconList) {
+            if (bd.getImageView().getTag().equals(v.getTag())) {
+                setSelection(i);
+                break;
+            }
+            i++;
+        }
+
+    }
+
+    private boolean viewLongClick(View view) {
         // create it from the object's tag
         ClipData.Item item = new ClipData.Item("");
         String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
@@ -312,37 +358,8 @@ public class BeaconFragment extends Fragment {
 
     }
 
-    public void beaconListClick(AdapterView<?> adapterView, View view, int Position, long id)
-    {
-        BeaconDrawable bc = screenBeaconList.get(Position);
-        ImageView iv = bc.getImageView();
-        iv.setImageResource(android.R.drawable.star_big_on);
-
-
-        int length = adapterView.getCount();
-        for(int i = 0; i < length; i++)
-        {
-            if (adapterView.getChildAt(i).equals(view))
-            {
-                adapterView.getChildAt(i).setBackgroundResource(android.R.color.holo_blue_dark);
-            }
-            else
-            {
-                adapterView.getChildAt(i).setBackgroundResource(android.R.color.transparent);
-            }
-        }
-        view.setBackgroundResource(android.R.color.holo_blue_light);
-        for (BeaconDrawable bd : screenBeaconList)
-        {
-            if(bd.getImageView().equals(iv))
-            {
-
-            }
-            else
-            {
-                bd.getImageView().setImageResource(android.R.drawable.star_big_off);
-            }
-        }
+    public void beaconListClick(AdapterView<?> adapterView, View view, int Position, long id) {
+        setSelection(Position);
     }
 
     public void getbeacons() {
@@ -379,24 +396,31 @@ public class BeaconFragment extends Fragment {
 
                         beaconList.add(beacon);
 
-
+                        // make the dynamic image views
                         ImageView iv = new ImageView(mContext);
-
-
                         iv.setImageDrawable(i_star.getDrawable());
                         iv.setScaleType(i_star.getScaleType());
                         iv.setLayoutParams(i_star.getLayoutParams());
-                        iv.setTag(iv);
+                        iv.setTag(i);
                         iv.setY(stary);
                         iv.setX(starx);
+                        // set the drag action
                         iv.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
-                                return viewClick(view);
+                                return viewLongClick(view);
+                            }
+                        });
+                        // set the click action
+                        iv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                viewClick(view);
                             }
                         });
 
                         boolean found = false;
+                        // check if our beaconposition was already saved, if so we load that data
                         for (BeaconDrawable bdl : screenBeaconList) {
                             if (bdl.getMajor() == major && bdl.getMinor() == minor) {
                                 iv.setX(bdl.getX());
@@ -414,7 +438,7 @@ public class BeaconFragment extends Fragment {
                             bd.setImageView(iv);
                             screenBeaconList.add(bd);
                         }
-                        starFrame.addView(iv);
+                        drawFrame.addView(iv);
                         starx += 50;
                         stary += 50;
 
@@ -423,27 +447,8 @@ public class BeaconFragment extends Fragment {
                     }
                     // set adapter after filling our list of offers
                     if (l_beaconListView != null) {
-                        l_beaconListView.setAdapter(new BeaconAdapter(mContext, beaconList));
-
-//                        l_offerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                            @Override
-//                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                                // function responsible for the clicks in the offer list
-//                                offerListClick(adapterView, view, i, l);
-//                                f_viewFrame.setVisibility(View.VISIBLE);
-//                                f_editFrame.setVisibility(View.GONE);
-//                                m_save.setVisible(false);
-//                                m_add.setVisible(true);
-//                            }
-//                        });
-//                        l_offerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//
-//                            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                                // function responsible for the product list long clicks
-//                                offerListLongClick(adapterView, view, i, l);
-//                                return true;
-//                            }
-//                        });
+                        beaconAdapter = new BeaconAdapter(mContext, beaconList);
+                        l_beaconListView.setAdapter(beaconAdapter);
                     }
                 }
             }
@@ -454,12 +459,6 @@ public class BeaconFragment extends Fragment {
             }
         }, mContext);
     }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onBeaconInteraction(Uri uri);
-    }
-
 
     public void saveToInternalSorage(Bitmap bitmapImage, String filename) {
         ContextWrapper cw = new ContextWrapper(mContext);
@@ -477,6 +476,85 @@ public class BeaconFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void showSlide() {
+
+        if(!infoscreenOpen) {
+            AnimationSet set = new AnimationSet(true);
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.enter_from_right);
+
+            animation.setDuration(400);
+            set.addAnimation(animation);
+
+            slideInFrame.setVisibility(View.VISIBLE);
+            slideInFrame.startAnimation(animation);
+            infoscreenOpen = true;
+        }
+
+    }
+
+    public void hideSlide() {
+        if(infoscreenOpen) {
+            AnimationSet set = new AnimationSet(true);
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.exit_to_right);
+
+            animation.setDuration(400);
+            set.addAnimation(animation);
+
+            slideInFrame.setVisibility(View.GONE);
+            slideInFrame.startAnimation(animation);
+            infoscreenOpen = false;
+        }
+
+    }
+
+    public void setSelection(int input) {
+        // this function sets our list on selected and sets the image
+
+        m_info.setVisible(true);
+        m_edit.setVisible(true);
+        int length = beaconList.size();
+
+
+        for (int i = 0; i < length; i++) {
+            if (i == input) {
+                l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.holo_blue_dark);
+                screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_on);
+                // setting the info of the selected beacon
+                setInfo(i);
+                setEdit(i);
+            } else {
+                l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.transparent);
+                screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_off);
+            }
+        }
+
+    }
+
+    public void setInfo(int input)
+    {
+        Beacon b = beaconList.get(input);
+
+        int major = b.getMajor();
+        int minor = b.getMinor();
+        int OfferID = b.getOfferID();
+        int productID = b.getProductID();
+
+        t_infoMajor.setText("Major: " + Integer.toString(major));
+        t_infoMinor.setText("Minor: " + Integer.toString(minor));
+        t_infoProductID.setText("Product id: " + Integer.toString(productID));
+        t_infoOfferID.setText("Offer id: " + Integer.toString(OfferID));
+
+    }
+    public void setEdit(int input)
+    {
+
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onBeaconInteraction(Uri uri);
     }
 
 }

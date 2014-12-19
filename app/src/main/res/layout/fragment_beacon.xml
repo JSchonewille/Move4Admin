@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,10 +6,13 @@
     android:id="@+id/toplayout"
     android:orientation="horizontal">
 
+    <LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
     <!-- TODO: Update blank fragment layout -->
 
-
-    <FrameLayout
+        <FrameLayout
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="0.16">
@@ -22,10 +25,10 @@
     </FrameLayout>
 
     <FrameLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_weight="0.8"
-        android:id="@+id/f_starFrame">
+        android:id="@+id/f_starFrame"
+        android:layout_weight="0.8">
 
             <ImageView
                 android:layout_width="40dp"
@@ -34,7 +37,208 @@
                 android:src="@android:drawable/star_big_off"
                 android:focusableInTouchMode="false"
                 android:visibility="gone" />
+
+    </FrameLayout>
+</LinearLayout>
+
+    <FrameLayout
+        android:layout_width="500dp"
+        android:layout_height="fill_parent"
+        android:layout_gravity="right"
+        android:id="@+id/f_beaconSlideinSceen"
+        android:longClickable="true"
+        android:background="#ff585858">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:id="@+id/f_infoFrame"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.1">
+
+                    <Button
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/b_infoClose"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/close" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Major:"
+                        android:id="@+id/t_infoMajorLabel"
+                        android:layout_marginLeft="50dp"
+                        android:layout_weight="0.1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Minor:"
+                        android:id="@+id/t_infoMinorLabel"
+                        android:layout_weight="0.1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.45">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/move4darker"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Product id :"
+                            android:id="@+id/t_infoProductIDLabel" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/imageView2"
+                            android:minHeight="150dp"
+                            android:minWidth="150dp" />
+
+                        <RelativeLayout
+                            android:orientation="vertical"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:text="Name : "
+                                android:id="@+id/t_infoProductNameLabel" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:text="Category :"
+                                android:id="@+id/t_infoCategoryNameLabel"
+                                android:layout_below="@+id/t_infoProductNameLabel"
+                                android:layout_alignParentStart="true" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:text="description"
+                                android:id="@+id/t_infoDescriptionLabel"
+                                android:layout_below="@+id/t_infoCategoryNameLabel"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="20dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:text="description"
+                                android:id="@+id/t_infoDescription"
+                                android:layout_below="@+id/t_infoDescriptionLabel"
+                                android:layout_alignParentStart="true" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.45">
+
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/move4darker"
+                        android:gravity="center" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Offer id :"
+                            android:id="@+id/t_infoOfferIDLabel" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent" >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/i_infoOfferImage"
+                            android:minHeight="150dp"
+                            android:minWidth="150dp" />
+
+                        <RelativeLayout
+                            android:orientation="vertical"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:text="Category :"
+                                android:id="@+id/t_infoOfferCategory"
+                                android:layout_alignParentStart="true" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:text="description"
+                                android:id="@+id/textView3"
+                                android:layout_below="@+id/t_infoOfferCategory"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="20dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:text="description"
+                                android:id="@+id/t_infoOfferDesc"
+                                android:layout_below="@+id/textView3"
+                                android:layout_alignParentStart="true" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
         </FrameLayout>
 
-</LinearLayout>
+</FrameLayout>
 

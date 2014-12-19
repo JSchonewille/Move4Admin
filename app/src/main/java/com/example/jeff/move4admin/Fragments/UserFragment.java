@@ -109,8 +109,12 @@ public class UserFragment extends Fragment {
         g_likes = (GridView) myInflatedView.findViewById(R.id.g_likes);
 
         dbf = DatabaseFunctions.getInstance(getActivity());
+        userlist.clear();
+        userlikes.clear();
+        l_users.setAdapter(null);
         userlist = dbf.getUsers();
         userlikes = dbf.getUserLikes();
+
             l_users.setAdapter(new UserAdapter(getActivity(), userlist));
             l_users.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

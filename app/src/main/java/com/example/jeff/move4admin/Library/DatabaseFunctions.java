@@ -93,6 +93,7 @@ public class DatabaseFunctions {
 
     public void addUserLikes(int id, String categoryName) {
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        db.delete(TABLE_USERLIKES,KEY_USERID + " = " + id ,null );
         ContentValues values = new ContentValues();
         values.put(KEY_USERID, id); //
         values.put(KEY_CATEGORYNAME, categoryName); //
@@ -123,6 +124,7 @@ public class DatabaseFunctions {
     public void addUser(int id, String profileImage,String name,String lastName,String email,String created ) {
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
+        db.delete(TABLE_ALLUSERS,KEY_USER + " = " + id ,null );
         values.put(KEY_USER, id); //
         values.put(KEY_PROFILEIMAGE, profileImage); //
         values.put(KEY_USERNAME, name); //
@@ -137,6 +139,7 @@ public class DatabaseFunctions {
     public void addALLCategory(String name)
     {
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        db.delete(TABLE_ALLLIKES,KEY_ALLCATEGORYNAME + " = " + name ,null);
         ContentValues values = new ContentValues();
 
         values.put(KEY_ALLCATEGORYNAME,name);
@@ -149,7 +152,7 @@ public class DatabaseFunctions {
     {
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-
+        db.delete(TABLE_ALLLIKES,KEY_ALLCATEGORYID + " = " + id ,null );
         values.put(KEY_ALLCATEGORYID,id);
         values.put(KEY_ALLCATEGORYNAME,name);
 
@@ -334,6 +337,20 @@ public class DatabaseFunctions {
         db.close();
     }
 
+    public void resetBeaconLocations(){
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_BEACONLOCATIONS, null, null);
+        db.close();
+    }
+
+    public void resetBeaconBackground(){
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_BEACONBACKGROUND, null, null);
+        db.close();
+    }
+
     public void resetAllLikes(){
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
         // Delete All Rows
@@ -341,7 +358,10 @@ public class DatabaseFunctions {
         db.close();
     }
 
-/**
+
+
+
+    /**
      * Create tables
      * */
 

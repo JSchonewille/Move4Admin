@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:yourapp="http://schemas.android.com/tools">
-
-    <item android:id="@+id/action_options"
-        android:title="Edit"
+    <item android:id="@+id/action_info"
         android:showAsAction="always"
-        android:icon="@android:drawable/ic_menu_gallery"
+        android:icon="@android:drawable/ic_menu_info_details"
         android:visible="false"/>
+
 
     <item android:id="@+id/action_edit"
         android:title="Edit"
@@ -21,6 +20,12 @@
     <item android:id="@+id/action_save"
         android:title="Save"
         android:showAsAction="always"
+        android:visible="false"/>
+
+    <item android:id="@+id/action_options"
+        android:title="Edit"
+        android:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_gallery"
         android:visible="false"/>
 
 </menu>
