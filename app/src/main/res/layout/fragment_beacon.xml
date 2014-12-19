@@ -52,8 +52,9 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:id="@+id/f_infoFrame"
-                android:layout_height="match_parent">
+                android:id="@+id/f_BeaconInfoFrame"
+                android:layout_height="match_parent"
+                android:visibility="invisible">
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -142,14 +143,14 @@
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:text="Category :"
                                 android:id="@+id/t_infoProductCategory"
-                                android:layout_below="@+id/t_infoProductNameLabel"
-                                android:layout_alignParentStart="true" />
+                                android:layout_below="@id/t_infoProductNameLabel"
+                                 />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="description"
+                                android:text="Description:"
                                 android:id="@+id/t_infoProductDescriptionLabel"
                                 android:layout_below="@+id/t_infoProductCategory"
                                 android:layout_centerHorizontal="true"
@@ -216,14 +217,14 @@
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:text="Category :"
                                 android:id="@+id/t_infoOfferCategory"
-                                android:layout_alignParentStart="true" />
+                                />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="description"
-                                android:id="@+id/textView3"
+                                android:text="Description:"
+                                android:id="@+id/t_infoOfferDescriptionLabel"
                                 android:layout_below="@+id/t_infoOfferCategory"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="20dp" />
@@ -234,13 +235,207 @@
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:text="description"
                                 android:id="@+id/t_infoOfferDesc"
-                                android:layout_below="@+id/textView3"
+                                android:layout_below="@+id/t_infoOfferDescriptionLabel"
                                 android:layout_alignParentStart="true" />
                         </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:id="@+id/f_BeaconEditFrame"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.1">
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/b_beaconEditClose"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/close" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Major:"
+                    android:id="@+id/t_editMajorLabel"
+                    android:layout_marginLeft="50dp"
+                    android:layout_weight="0.1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Minor:"
+                    android:id="@+id/t_editMinorLabel"
+                    android:layout_weight="0.1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.45">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/move4darker"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Product id :"
+                        android:id="@+id/t_editProductIDLabel" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/i_editProductImage"
+                        android:minHeight="150dp"
+                        android:minWidth="150dp"
+                        android:maxHeight="150dp"
+                        android:maxWidth="150dp" />
+
+                    <RelativeLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Name : "
+                            android:id="@+id/t_editProductNameLabel" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Category :"
+                            android:id="@+id/t_editProductCategory"
+                            android:layout_below="@+id/t_editProductNameLabel"
+                            android:layout_alignParentStart="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="description"
+                            android:id="@+id/t_editProductDescriptionLabel"
+                            android:layout_below="@+id/t_editProductCategory"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="20dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="description"
+                            android:id="@+id/t_editProductDescription"
+                            android:layout_below="@+id/t_editProductDescriptionLabel"
+                            android:layout_alignParentStart="true" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.45">
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/move4darker"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Offer id :"
+                        android:id="@+id/t_editOfferIDLabel" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/i_editOfferImage"
+                        android:minHeight="150dp"
+                        android:minWidth="150dp"
+                        android:maxHeight="150dp"
+                        android:maxWidth="150dp" />
+
+                    <RelativeLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Category :"
+                            android:id="@+id/t_editOfferCategory"
+                            android:layout_alignParentStart="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="description"
+                            android:id="@+id/t_editOfferDescriptionLabel"
+                            android:layout_below="@+id/t_editOfferCategory"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="20dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="description"
+                            android:id="@+id/t_editOfferDesc"
+                            android:layout_below="@+id/t_editOfferDescriptionLabel"
+                            android:layout_alignParentStart="true" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
 
         </FrameLayout>
 

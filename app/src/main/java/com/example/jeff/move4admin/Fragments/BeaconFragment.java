@@ -9,6 +9,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.LinearGradient;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -29,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -108,6 +110,8 @@ public class BeaconFragment extends Fragment {
     private ImageView i_star;
     private FrameLayout drawFrame;
     private FrameLayout slideInFrame;
+    private LinearLayout infoLinearLayout;
+    private LinearLayout editLinearLayout;
     private ContextWrapper cw;
 
     private OnFragmentInteractionListener mListener;
@@ -150,13 +154,16 @@ public class BeaconFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add:
+                editLinearLayout.setVisibility(View.VISIBLE);
                 return true;
             case R.id.action_info:
+                infoLinearLayout.setVisibility(View.VISIBLE);
                 showSlide();
                 return true;
             case R.id.action_save:
                 return true;
             case R.id.action_edit:
+                editLinearLayout.setVisibility(View.VISIBLE);
                 return true;
             case R.id.action_options:
                 Intent intent = new Intent(Intent.ACTION_PICK,
@@ -226,6 +233,11 @@ public class BeaconFragment extends Fragment {
         t_infoMinor = (TextView) v.findViewById(R.id.t_infoMinorLabel);
         t_infoOfferID = (TextView) v.findViewById(R.id.t_infoOfferIDLabel);
         t_infoProductID = (TextView) v.findViewById(R.id.t_infoProductIDLabel);
+        infoLinearLayout = (LinearLayout) v.findViewById(R.id.f_BeaconInfoFrame);
+        editLinearLayout = (LinearLayout) v.findViewById(R.id.f_BeaconEditFrame);
+
+        infoLinearLayout.setVisibility(View.GONE);
+        editLinearLayout.setVisibility(View.GONE);
 
        t_infoProductName = (TextView) v.findViewById(R.id.t_infoProductNameLabel);
        t_infoProductCategory = (TextView) v.findViewById(R.id.t_infoProductCategory);
