@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Move4Admin</string>
-    <string name="title_activity_Splashscreen">Splashscreen</string>
+    <string name="title_activity_Splashscreen">Move 4 Admin</string>
     <string name="title_section1">Users</string>
     <string name="title_section2">Categories</string>
     <string name="title_section3">products</string>
