@@ -281,7 +281,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/editText"
+                        android:id="@+id/e_editMajor"
                         android:minWidth="80dp" />
                 </LinearLayout>
 
@@ -301,7 +301,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/editText2"
+                        android:id="@+id/e_editMinor"
                         android:minWidth="80dp" />
                 </LinearLayout>
 
@@ -330,9 +330,9 @@
                 </LinearLayout>
 
                 <Spinner
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spinner3" />
+                    android:id="@+id/s_editProductSpinner" />
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -418,7 +418,7 @@
                 <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spinner2"
+                    android:id="@+id/s_editOfferSpinner"
                     android:layout_gravity="center_horizontal" />
 
                 <LinearLayout

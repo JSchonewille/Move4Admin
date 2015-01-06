@@ -1,19 +1,21 @@
 package com.example.jeff.move4admin.Fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.LinearGradient;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.DragEvent;
@@ -28,11 +30,14 @@ import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -44,9 +49,12 @@ import com.example.jeff.move4admin.Library.Offer;
 import com.example.jeff.move4admin.Library.Product;
 import com.example.jeff.move4admin.Library.ServerRequestHandler;
 import com.example.jeff.move4admin.Library.adapters.BeaconAdapter;
+import com.example.jeff.move4admin.Library.adapters.OfferAdapter;
+import com.example.jeff.move4admin.Library.adapters.ProductAdapter;
 import com.example.jeff.move4admin.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -83,18 +91,19 @@ public class BeaconFragment extends Fragment {
     private Context mContext;
     private ArrayList<Beacon> beaconList = new ArrayList<Beacon>();
     private ArrayList<BeaconDrawable> screenBeaconList = new ArrayList<BeaconDrawable>();
-    private ArrayList<Offer> offerList =  new ArrayList<Offer>();
-    private ArrayList<Product> productList =  new ArrayList<Product>();
-    private ArrayList<Like> categoryList =  new ArrayList<Like>();
+    private ArrayList<Offer> offerList = new ArrayList<Offer>();
+    private ArrayList<Product> productList = new ArrayList<Product>();
+    private ArrayList<Like> categoryList = new ArrayList<Like>();
     private BeaconAdapter beaconAdapter;
     private Boolean infoscreenOpen = false;
     private Boolean initDone = false;
     private Boolean firstSelection = false;
+    private Boolean editaction = false;
     private String savedPath;
 
-    // all infoscreen variables
     private Button b_infoClose;
     private Button b_editClose;
+    // all infoscreen variables
     private TextView t_infoMajor;
     private TextView t_infoMinor;
     private TextView t_infoProductID;
@@ -106,6 +115,23 @@ public class BeaconFragment extends Fragment {
     private TextView t_infoOfferDesc;
     private ImageView i_infoProductImage;
     private ImageView i_infoOfferImage;
+
+    //all edit screen variables
+    private TextView t_editMajor;
+    private TextView t_editoMinor;
+    private TextView t_editProductID;
+    private TextView t_editOfferID;
+    private TextView t_editProductName;
+    private TextView t_editProductCategory;
+    private TextView t_editProductDesc;
+    private TextView t_editOfferCategory;
+    private TextView t_editOfferDesc;
+    private ImageView i_editProductImage;
+    private ImageView i_editOfferImage;
+    private EditText e_editMajor;
+    private EditText e_editMinor;
+    private Spinner s_editProductSpinner;
+    private Spinner s_editOfferSpinner;
 
     private ListView l_beaconListView;
     private ImageView i_star;
@@ -155,21 +181,40 @@ public class BeaconFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add:
+                editaction = false;
                 infoLinearLayout.setVisibility(View.GONE);
                 editLinearLayout.setVisibility(View.VISIBLE);
+                m_options.setVisible(false);
+                m_edit.setVisible(false);
+                m_info.setVisible(false);
+                m_add.setVisible(false);
+                m_save.setVisible(true);
+                e_editMinor.setEnabled(true);
+                e_editMajor.setEnabled(true);
                 clearSelection();
+                clearEdit();
                 showSlide();
                 return true;
             case R.id.action_info:
+                editaction = false;
                 editLinearLayout.setVisibility(View.GONE);
                 infoLinearLayout.setVisibility(View.VISIBLE);
                 showSlide();
                 return true;
             case R.id.action_save:
+                save();
                 return true;
             case R.id.action_edit:
+                editaction = true;
+                m_options.setVisible(false);
+                m_edit.setVisible(false);
+                m_info.setVisible(false);
+                m_add.setVisible(false);
+                m_save.setVisible(true);
                 infoLinearLayout.setVisibility(View.GONE);
                 editLinearLayout.setVisibility(View.VISIBLE);
+                e_editMinor.setEnabled(false);
+                e_editMajor.setEnabled(false);
                 showSlide();
                 return true;
             case R.id.action_options:
@@ -182,6 +227,7 @@ public class BeaconFragment extends Fragment {
         }
     }
 
+    //when selecting an image
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -228,7 +274,7 @@ public class BeaconFragment extends Fragment {
         // Inflate the layout for this fragment
         cw = new ContextWrapper(getActivity());
         savedPath = cw.getDir("imageDir", Context.MODE_PRIVATE).toString();
-        View v = inflater.inflate(R.layout.fragment_beacon, container, false);
+        final View v = inflater.inflate(R.layout.fragment_beacon, container, false);
         cw = new ContextWrapper(getActivity());
         i_star = (ImageView) v.findViewById(R.id.i_star);
         l_beaconListView = (ListView) v.findViewById(R.id.beaconList);
@@ -237,24 +283,38 @@ public class BeaconFragment extends Fragment {
         slideInFrame.setVisibility(View.GONE);
         b_infoClose = (Button) v.findViewById(R.id.b_infoClose);
         b_editClose = (Button) v.findViewById(R.id.b_beaconEditClose);
+        infoLinearLayout = (LinearLayout) v.findViewById(R.id.f_BeaconInfoFrame);
+        editLinearLayout = (LinearLayout) v.findViewById(R.id.f_BeaconEditFrame);
+        infoLinearLayout.setVisibility(View.GONE);
+        editLinearLayout.setVisibility(View.GONE);
+        // info variables intialisation
         t_infoMajor = (TextView) v.findViewById(R.id.t_infoMajorLabel);
         t_infoMinor = (TextView) v.findViewById(R.id.t_infoMinorLabel);
         t_infoOfferID = (TextView) v.findViewById(R.id.t_infoOfferIDLabel);
         t_infoProductID = (TextView) v.findViewById(R.id.t_infoProductIDLabel);
-        infoLinearLayout = (LinearLayout) v.findViewById(R.id.f_BeaconInfoFrame);
-        editLinearLayout = (LinearLayout) v.findViewById(R.id.f_BeaconEditFrame);
-
-        infoLinearLayout.setVisibility(View.GONE);
-        editLinearLayout.setVisibility(View.GONE);
-
-       t_infoProductName = (TextView) v.findViewById(R.id.t_infoProductNameLabel);
-       t_infoProductCategory = (TextView) v.findViewById(R.id.t_infoProductCategory);
-       t_infoProductDesc = (TextView) v.findViewById(R.id.t_infoProductDescription);
-       t_infoOfferCategory = (TextView) v.findViewById(R.id.t_infoOfferCategory);
-       t_infoOfferDesc = (TextView) v.findViewById(R.id.t_infoOfferDesc);
-       i_infoProductImage = (ImageView) v.findViewById(R.id.i_infoProductImage);
-       i_infoOfferImage = (ImageView) v.findViewById(R.id.i_infoOfferImage);
-
+        t_infoProductName = (TextView) v.findViewById(R.id.t_infoProductNameLabel);
+        t_infoProductCategory = (TextView) v.findViewById(R.id.t_infoProductCategory);
+        t_infoProductDesc = (TextView) v.findViewById(R.id.t_infoProductDescription);
+        t_infoOfferCategory = (TextView) v.findViewById(R.id.t_infoOfferCategory);
+        t_infoOfferDesc = (TextView) v.findViewById(R.id.t_infoOfferDesc);
+        i_infoProductImage = (ImageView) v.findViewById(R.id.i_infoProductImage);
+        i_infoOfferImage = (ImageView) v.findViewById(R.id.i_infoOfferImage);
+        // edit variables initialisation
+        t_editMajor = (TextView) v.findViewById(R.id.t_editMajorLabel);
+        t_editoMinor = (TextView) v.findViewById(R.id.t_editMinorLabel);
+        t_editProductID = (TextView) v.findViewById(R.id.t_editProductIDLabel);
+        t_editOfferID = (TextView) v.findViewById(R.id.t_editOfferIDLabel);
+        t_editProductName = (TextView) v.findViewById(R.id.t_editProductNameLabel);
+        t_editProductCategory = (TextView) v.findViewById(R.id.t_editProductCategory);
+        t_editProductDesc = (TextView) v.findViewById(R.id.t_editProductDescription);
+        t_editOfferCategory = (TextView) v.findViewById(R.id.t_editOfferCategory);
+        t_editOfferDesc = (TextView) v.findViewById(R.id.t_editOfferDesc);
+        i_editProductImage = (ImageView) v.findViewById(R.id.i_editProductImage);
+        i_editOfferImage = (ImageView) v.findViewById(R.id.i_editOfferImage);
+        e_editMajor = (EditText) v.findViewById(R.id.e_editMajor);
+        e_editMinor = (EditText) v.findViewById(R.id.e_editMinor);
+        s_editProductSpinner = (Spinner) v.findViewById(R.id.s_editProductSpinner);
+        s_editOfferSpinner = (Spinner) v.findViewById(R.id.s_editOfferSpinner);
 
         String beaconsFrameBackground = DatabaseFunctions.getInstance(mContext).getBeaconBackground();
 
@@ -282,6 +342,39 @@ public class BeaconFragment extends Fragment {
             }
         });
 
+        l_beaconListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                beaconListLongClick(adapterView, view,i,l);
+                return true;
+            }
+        });
+
+        s_editOfferSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView3, View view3, int i3, long l3) {
+                editOfferSpinnerClick(adapterView3,view3,i3,l3);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        s_editProductSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView4, View view4, int i4, long l4) {
+                editProductSpinnerClick(adapterView4,view4,i4,l4);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
         b_infoClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -296,6 +389,7 @@ public class BeaconFragment extends Fragment {
         });
         initProductOffer();
         getbeacons();
+
 
         return v;
 
@@ -358,10 +452,6 @@ public class BeaconFragment extends Fragment {
     private boolean viewDrag(View v, DragEvent event) {
         // Handles each of the expected events
 
-        Drawable normalShape = i_star.getDrawable();
-        Drawable targetShape = i_star.getDrawable();
-
-
         switch (event.getAction()) {
             //signal for the start of a drag and drop operation.
             case DragEvent.ACTION_DRAG_STARTED:
@@ -412,8 +502,25 @@ public class BeaconFragment extends Fragment {
         setSelection(Position);
     }
 
+    private boolean beaconListLongClick(AdapterView<?> adapterView2, View view2, final int position2, long l2)
+    {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setTitle("Delete");
+        alert.setMessage("Do you want to delete this beacon ?");
+        // Set an EditText view to get user input
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                Beacon ins = beaconList.get(position2);
+                deleteBeacon(ins.getBeaconID(),ins.getMajor(),ins.getMinor(),position2);
+            }
+        });
+        alert.show();
+
+        return true;
+    }
+
     public void getbeacons() {
-        screenBeaconList = DatabaseFunctions.getInstance(mContext).getBeaconLocations();
+
 
         ServerRequestHandler.getAllBeacons(new Response.Listener<JSONArray>() {
             float starx = 100;
@@ -422,6 +529,8 @@ public class BeaconFragment extends Fragment {
             @Override
             public void onResponse(JSONArray jsonArray) {
                 beaconList.clear();
+                screenBeaconList.clear();
+                screenBeaconList = DatabaseFunctions.getInstance(mContext).getBeaconLocations();
                 for (int i = 0; i < jsonArray.length(); i++) {
                     try {
                         JSONObject o = jsonArray.getJSONObject(i);
@@ -530,7 +639,7 @@ public class BeaconFragment extends Fragment {
 
     public void showSlide() {
 
-        if(!infoscreenOpen) {
+        if (!infoscreenOpen) {
             AnimationSet set = new AnimationSet(true);
             Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.enter_from_right);
 
@@ -545,7 +654,16 @@ public class BeaconFragment extends Fragment {
     }
 
     public void hideSlide() {
-        if(infoscreenOpen) {
+        if (infoscreenOpen) {
+            m_add.setVisible(true);
+            m_options.setVisible(true);
+            m_save.setVisible(false);
+            if (editaction)
+            {
+                m_info.setVisible(true);
+                m_edit.setVisible(true);
+            }
+
             AnimationSet set = new AnimationSet(true);
             Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.exit_to_right);
 
@@ -561,8 +679,8 @@ public class BeaconFragment extends Fragment {
 
     public void setSelection(int input) {
         // this function sets our list on selected and sets the image
-        firstSelection =  true;
-        if(initDone) {
+        firstSelection = true;
+        if (initDone) {
             m_info.setVisible(true);
             m_edit.setVisible(true);
         }
@@ -588,14 +706,13 @@ public class BeaconFragment extends Fragment {
         // this function sets our list on selected and sets the image
         int length = beaconList.size();
         for (int i = 0; i < length; i++) {
-                l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.transparent);
-                screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_off);
-            }
-        m_edit.setVisible(false);
+            l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.transparent);
+            screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_off);
         }
+        m_edit.setVisible(false);
+    }
 
-    public void initProductOffer()
-    {
+    public void initProductOffer() {
         ServerRequestHandler.getAllProducts(new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray jsonArray) {
@@ -672,37 +789,50 @@ public class BeaconFragment extends Fragment {
                             }
                         }
 
-                       ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
-                           @Override
-                           public void onResponse(JSONArray jsonArray) {
-                               for (int i = 0; i < jsonArray.length(); i++) {
-                                   try {
-                                       JSONObject o = jsonArray.getJSONObject(i);
-                                       int id = o.getInt("id");
-                                       String like = o.getString("name");
-                                       Like l = new Like(id,like);
-                                       categoryList.add(l);
-                                   }
-                                   catch (Exception e)
-                                   {
+                        ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray jsonArray) {
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    try {
+                                        JSONObject o = jsonArray.getJSONObject(i);
+                                        int id = o.getInt("id");
+                                        String like = o.getString("name");
+                                        Like l = new Like(id, like);
+                                        categoryList.add(l);
+                                    } catch (Exception e) {
 
-                                   }
-                               }
-                               // logica for when everything has loaded
-                               initDone = true;
-                               m_add.setVisible(true);
-                               if (firstSelection) {
-                                   m_edit.setVisible(true);
-                                   m_info.setVisible(true);
+                                    }
+                                }
+                                // logica for when everything has loaded
+                                initDone = true;
+                                m_add.setVisible(true);
+                                if (firstSelection) {
+                                    m_edit.setVisible(true);
+                                    m_info.setVisible(true);
 
-                               }
-                           }
-                       },new Response.ErrorListener() {
-                           @Override
-                           public void onErrorResponse(VolleyError volleyError) {
+                                }
+                                s_editProductSpinner.setAdapter(new ProductAdapter(mContext, productList));
+//                                s_editProductSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                                    @Override
+//                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                                        editProductSpinnerClick(adapterView,view,i,l);
+//                                    }
+//                                });
+                                s_editOfferSpinner.setAdapter(new OfferAdapter(mContext, offerList));
+//                                s_editOfferSpinner.setOnItemSelectedListener(new AdapterView.OnItemClickListener() {
+//                                    @Override
+//                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                                        editOfferSpinnerClick(adapterView,view,i,l);
+//                                    }
+//                                });
 
-                           }
-                       },mContext);
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+
+                            }
+                        }, mContext);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -718,40 +848,32 @@ public class BeaconFragment extends Fragment {
             }
         }, mContext);
     }
-    public void setInfo(int input)
-    {
-        if(initDone) {
+
+    public void setInfo(int input) {
+        if (initDone) {
             Beacon b = beaconList.get(input);
             Offer beaconOffer = new Offer();
             Product beaconProduct = new Product();
             String offerCategory = "";
             String productCategory = "";
 
-                for (Offer of : offerList)
-                {
-                    if(of.getOfferID() == b.getOfferID())
-                    {
-                        beaconOffer = of;
-                        for(Like cat : categoryList)
-                        {
-                            if (cat.getcategoryID() == of.getCategoryID())
-                            {
-                                offerCategory = cat.getcategoryName();
-                                break;
-                            }
+            for (Offer of : offerList) {
+                if (of.getOfferID() == b.getOfferID()) {
+                    beaconOffer = of;
+                    for (Like cat : categoryList) {
+                        if (cat.getcategoryID() == of.getCategoryID()) {
+                            offerCategory = cat.getcategoryName();
+                            break;
                         }
-                        break;
                     }
+                    break;
                 }
-            for (Product pr : productList)
-            {
-                if ( pr.getProductID() == b.getProductID())
-                {
+            }
+            for (Product pr : productList) {
+                if (pr.getProductID() == b.getProductID()) {
                     beaconProduct = pr;
-                    for (Like l : categoryList)
-                    {
-                        if (l.getcategoryID() == pr.getCategoryID())
-                        {
+                    for (Like l : categoryList) {
+                        if (l.getcategoryID() == pr.getCategoryID()) {
                             productCategory = l.getcategoryName();
                         }
                     }
@@ -769,14 +891,14 @@ public class BeaconFragment extends Fragment {
             t_infoOfferID.setText("Offer id: " + Integer.toString(OfferID));
             t_infoProductName.setText("Name: " + beaconProduct.getName());
             t_infoProductCategory.setText("Category: " + productCategory);
-            t_infoOfferCategory.setText("Category: " + offerCategory );
+            t_infoOfferCategory.setText("Category: " + offerCategory);
             t_infoProductDesc.setText(beaconProduct.getDescription());
             t_infoOfferDesc.setText(beaconOffer.getDescription());
-           ;
+            ;
             try {
                 File f = new File(savedPath, beaconProduct.getImage().substring(7));
                 Bitmap b1 = BitmapFactory.decodeStream(new FileInputStream(f));
-               //b1 = Bitmap.createScaledBitmap(b1, 800, 800, true);
+                //b1 = Bitmap.createScaledBitmap(b1, 800, 800, true);
                 i_infoProductImage.setImageBitmap(b1);
             } catch (Exception e) {
                 Bitmap noimg1 = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.no_product);
@@ -787,7 +909,7 @@ public class BeaconFragment extends Fragment {
             try {
                 File f = new File(savedPath, beaconOffer.getImage().substring(7));
                 Bitmap b2 = BitmapFactory.decodeStream(new FileInputStream(f));
-               // b2 = Bitmap.createScaledBitmap(b2, 800, 800, true);
+                // b2 = Bitmap.createScaledBitmap(b2, 800, 800, true);
                 i_infoOfferImage.setImageBitmap(b2);
             } catch (Exception e) {
                 Bitmap noimg2 = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.no_product);
@@ -797,11 +919,160 @@ public class BeaconFragment extends Fragment {
 
         }
     }
-    public void setEdit(int input)
-    {
+
+    public void setEdit(int input) {
+        Beacon b = beaconList.get(input);
+        e_editMajor.setText(Integer.toString(b.getMajor()));
+        e_editMinor.setText(Integer.toString(b.getMinor()));
+
 
     }
 
+    public void editProductSpinnerClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Product p = productList.get(i);
+        for (Like c : categoryList)
+        {
+            if (c.getcategoryID() == p.getCategoryID())
+            {
+                t_editProductCategory.setText("Category: " +c.getcategoryName());
+            }
+        }
+        t_editProductName.setText("Name: " + p.getName());
+        t_editProductDesc.setText(p.getDescription());
+    }
+
+    public void editOfferSpinnerClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Offer o = offerList.get(i);
+        for (Like c : categoryList)
+        {
+            if (c.getcategoryID() == o.getCategoryID())
+            {
+                t_editOfferCategory.setText("Category: " +c.getcategoryName());
+            }
+        }
+        t_editOfferDesc.setText(o.getDescription());
+
+    }
+
+    public void clearEdit() {
+        e_editMajor.setText("");
+        e_editMinor.setText("");
+    }
+
+    private void save() {
+        if (!editaction) {
+            if (e_editMajor.getText().length() > 0 && e_editMinor.getText().length() > 0) {
+                int major = Integer.decode(e_editMajor.getText().toString());
+                int minor = Integer.decode(e_editMinor.getText().toString());
+                int productID = productList.get(s_editProductSpinner.getSelectedItemPosition()).getProductID();
+                int offerID = offerList.get(s_editOfferSpinner.getSelectedItemPosition()).getOfferID();
+
+                for (Beacon b : beaconList) {
+                    // check if the combination already exists
+                    if (b.getMajor() == major && b.getMinor() == minor) {
+                        Toast.makeText(mContext, "Major / Minor combination already exists ", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                insertBeacon(productID, offerID, major, minor);
+            }
+            else {
+                Toast.makeText(mContext, "No value for Major or Minor ", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+      else if(editaction)
+        {
+            if (e_editMajor.getText().length() > 0 && e_editMinor.getText().length() > 0) {
+
+
+                int major = Integer.decode(e_editMajor.getText().toString());
+                int minor = Integer.decode(e_editMinor.getText().toString());
+                int productID = productList.get(s_editProductSpinner.getSelectedItemPosition()).getProductID();
+                int offerID = offerList.get(s_editOfferSpinner.getSelectedItemPosition()).getOfferID();
+
+                for(Beacon beacon : beaconList)
+                {
+                    if(major == beacon.getMajor() && minor == beacon.getMinor())
+                    {
+                        updateBeacon(beacon.getBeaconID(),productID, offerID, major, minor);
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+
+    private void insertBeacon(int productid, int offerid, int major, int minor) {
+        ServerRequestHandler.uploadBeacon(new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                // refresh our list of beacons
+                try {
+                    Log.e("error", jsonObject.getString("returnvalue"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                getbeacons();
+                hideSlide();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.e("error",volleyError.toString());
+            }
+        }, productid, offerid, major, minor, mContext);
+    }
+
+    private void updateBeacon(int beaconid,int productid, int offerid, int major, int minor) {
+        ServerRequestHandler.editBeacon(new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                // refresh our list of beacons
+                try {
+                    Log.e("error", jsonObject.getString("returnvalue"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                getbeacons();
+                hideSlide();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.e("error", volleyError.toString());
+            }
+        }, beaconid, productid, offerid, major, minor, mContext);
+    }
+
+    private void deleteBeacon(final int beaconID,final int major,final int minor, final int position)
+    {
+        ServerRequestHandler.DeleteBeacon(new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                try {
+                    if (jsonObject.getString("returnvalue").equals("succes"))
+                    {
+                        DatabaseFunctions.getInstance(mContext).deleteBeaconLocation(Integer.toString(major),Integer.toString(minor));
+                        ImageView d = screenBeaconList.get(position).getImageView();
+                        d.setVisibility(View.GONE);
+                        drawFrame.removeView(d);
+                        drawFrame.invalidate();
+
+                        getbeacons();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        },new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        },Integer.toString(beaconID),mContext);
+    }
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onBeaconInteraction(Uri uri);

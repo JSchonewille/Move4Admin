@@ -17,11 +17,12 @@ public class Config {
     public static String INSERTCATEGORY = "http://playground.m4mapp.com/beacons/addcategory.php";
     public static String INSERTPRODUCT = "http://playground.m4mapp.com/beacons/addproduct.php";
     public static String INSERTOFFER = "http://playground.m4mapp.com/beacons/addoffer.php";
+    public static String INSERTBEACON = "http://playground.m4mapp.com/beacons/addbeacon.php";
 
     public static String DELETECATEGORY = "http://playground.m4mapp.com/beacons/deletecategory.php";
     public static String DELETEPRODUCT = "http://playground.m4mapp.com/beacons/deleteproduct.php";
     public static String DELETEOFFER = "http://playground.m4mapp.com/beacons/deleteoffer.php";
-
+    public static String DELETEBEACON = "http://playground.m4mapp.com/beacons/deletebeacon.php";
 
 
 }

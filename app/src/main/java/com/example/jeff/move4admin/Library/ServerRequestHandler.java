@@ -139,6 +139,34 @@ public class ServerRequestHandler {
         RequestController.getInstance(c).addToRequestQueue(request);
     }
 
+    public static void uploadBeacon(Response.Listener<JSONObject> l, Response.ErrorListener el,final int productID, final int offerID, final int major, final int minor, Context c){
+        String URL = Config.INSERTBEACON;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("productID",Integer.toString(productID));
+        params.put("offerID",Integer.toString(offerID));
+        params.put("major", Integer.toString(major));
+        params.put("minor", Integer.toString(minor));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
+    public static void editBeacon(Response.Listener<JSONObject> l, Response.ErrorListener el,final int beaconID,final int productID, final int offerID, final int major, final int minor, Context c){
+        String URL = Config.INSERTBEACON;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("beaconID",Integer.toString(beaconID));
+        params.put("productID",Integer.toString(productID));
+        params.put("offerID",Integer.toString(offerID));
+        params.put("major", Integer.toString(major));
+        params.put("minor", Integer.toString(minor));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
+
 
     public static void uploadCategory(Response.Listener<JSONObject> l, Response.ErrorListener el, final String categoryName,Context c){
         String URL = Config.INSERTCATEGORY;
@@ -171,6 +199,16 @@ public class ServerRequestHandler {
     }
     public static void DeleteOffer(Response.Listener<JSONObject> l, Response.ErrorListener el, final String id,Context c){
         String URL = Config.DELETEOFFER;
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("id", id);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+        //JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);
+
+        RequestController.getInstance(c).addToRequestQueue(request);
+    }
+
+    public static void DeleteBeacon(Response.Listener<JSONObject> l, Response.ErrorListener el, final String id,Context c){
+        String URL = Config.DELETEBEACON;
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("id", id);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params), l, el);

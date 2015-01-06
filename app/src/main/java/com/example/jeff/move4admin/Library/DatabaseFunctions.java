@@ -357,9 +357,16 @@ public class DatabaseFunctions {
         db.delete(TABLE_ALLLIKES, null, null);
         db.close();
     }
+    /**
+     * delete entry
+     * */
 
-
-
+    public void deleteBeaconLocation(String major, String minor){
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_BEACONLOCATIONS, KEY_BEACONMAJOR + " = " + major + " and " + KEY_BEACONMINOR + " = " + minor , null);
+        db.close();
+    }
 
     /**
      * Create tables
