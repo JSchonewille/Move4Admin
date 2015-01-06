@@ -12,10 +12,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.DragEvent;
@@ -184,6 +182,7 @@ public class BeaconFragment extends Fragment {
                 editaction = false;
                 infoLinearLayout.setVisibility(View.GONE);
                 editLinearLayout.setVisibility(View.VISIBLE);
+                l_beaconListView.setEnabled(false);
                 m_options.setVisible(false);
                 m_edit.setVisible(false);
                 m_info.setVisible(false);
@@ -196,6 +195,8 @@ public class BeaconFragment extends Fragment {
                 showSlide();
                 return true;
             case R.id.action_info:
+                l_beaconListView.setEnabled(true);
+                m_options.setVisible(false);
                 editaction = false;
                 editLinearLayout.setVisibility(View.GONE);
                 infoLinearLayout.setVisibility(View.VISIBLE);
@@ -203,9 +204,11 @@ public class BeaconFragment extends Fragment {
                 return true;
             case R.id.action_save:
                 save();
+                l_beaconListView.setEnabled(true);
                 return true;
             case R.id.action_edit:
                 editaction = true;
+                l_beaconListView.setEnabled(true);
                 m_options.setVisible(false);
                 m_edit.setVisible(false);
                 m_info.setVisible(false);
@@ -432,6 +435,16 @@ public class BeaconFragment extends Fragment {
     }
 
     private boolean viewLongClick(View view) {
+
+        int i = 0;
+        for (BeaconDrawable bd : screenBeaconList) {
+            if (bd.getImageView().getTag().equals(view.getTag())) {
+                setSelection(i);
+                break;
+            }
+            i++;
+        }
+
         // create it from the object's tag
         ClipData.Item item = new ClipData.Item("");
         String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
@@ -658,6 +671,7 @@ public class BeaconFragment extends Fragment {
             m_add.setVisible(true);
             m_options.setVisible(true);
             m_save.setVisible(false);
+            l_beaconListView.setEnabled(true);
             if (editaction)
             {
                 m_info.setVisible(true);
@@ -680,7 +694,7 @@ public class BeaconFragment extends Fragment {
     public void setSelection(int input) {
         // this function sets our list on selected and sets the image
         firstSelection = true;
-        if (initDone) {
+        if (initDone && !editaction) {
             m_info.setVisible(true);
             m_edit.setVisible(true);
         }
@@ -690,13 +704,13 @@ public class BeaconFragment extends Fragment {
         for (int i = 0; i < length; i++) {
             if (i == input) {
                 l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.holo_blue_dark);
-                screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_on);
+                screenBeaconList.get(i).getImageView().setImageResource(R.drawable.ibeacon_on);
                 // setting the info of the selected beacon
                 setInfo(i);
                 setEdit(i);
             } else {
                 l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.transparent);
-                screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_off);
+                screenBeaconList.get(i).getImageView().setImageResource(R.drawable.ibeacon_off);
             }
         }
 
@@ -707,7 +721,7 @@ public class BeaconFragment extends Fragment {
         int length = beaconList.size();
         for (int i = 0; i < length; i++) {
             l_beaconListView.getChildAt(i).setBackgroundResource(android.R.color.transparent);
-            screenBeaconList.get(i).getImageView().setImageResource(android.R.drawable.star_big_off);
+            screenBeaconList.get(i).getImageView().setImageResource(R.drawable.ibeacon_off);
         }
         m_edit.setVisible(false);
     }
