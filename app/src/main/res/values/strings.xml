@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Move4Admin</string>
+    <string name="app_name">Move 4 Admin</string>
     <string name="title_activity_Splashscreen">Move 4 Admin</string>
     <string name="title_section1">Gebruikers</string>
     <string name="title_section2">Categoriën</string>
@@ -11,13 +11,13 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Instellingen</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_product">Product</string>
-    <string name="title_activity_category">Category</string>
-    <string name="title_activity_user">User</string>
-    <string name="title_activity_offer">OfferActivity</string>
-    <string name="title_activity_beacon">BeaconActivity</string>
+    <string name="title_activity_product">Producten</string>
+    <string name="title_activity_category">Categoriën</string>
+    <string name="title_activity_user">Gebruikers</string>
+    <string name="title_activity_offer">Aanbiedingen</string>
+    <string name="title_activity_beacon">Beacons</string>
 
 </resources>

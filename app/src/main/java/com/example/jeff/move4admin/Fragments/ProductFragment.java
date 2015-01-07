@@ -145,8 +145,6 @@ public class ProductFragment extends Fragment {
                 m_save.setVisible(true);
 
                 // resets the layout
-                e_productDesc.setText("Description");
-                e_productName.setText("Name");
                 s_productCategory.setSelection(0);
                 i_addProductImage.setImageResource(R.drawable.no_product);
                 return true;

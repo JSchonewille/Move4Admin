@@ -136,31 +136,6 @@ public class DatabaseFunctions {
         //db.delete()
     }
 
-    public void addALLCategory(String name)
-    {
-        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
-        db.delete(TABLE_ALLLIKES,KEY_ALLCATEGORYNAME + " = " + name ,null);
-        ContentValues values = new ContentValues();
-
-        values.put(KEY_ALLCATEGORYNAME,name);
-
-        db.insert(TABLE_ALLLIKES,null,values);
-        db.close();
-    }
-
-    public void addALLCategory(int id, String name)
-    {
-        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        db.delete(TABLE_ALLLIKES,KEY_ALLCATEGORYID + " = " + id ,null );
-        values.put(KEY_ALLCATEGORYID,id);
-        values.put(KEY_ALLCATEGORYNAME,name);
-
-        db.insert(TABLE_ALLLIKES,null,values);
-        db.close();
-    }
-
-
     public ArrayList<User> getUsers(){
 
         ArrayList<User> users = new ArrayList<User>();

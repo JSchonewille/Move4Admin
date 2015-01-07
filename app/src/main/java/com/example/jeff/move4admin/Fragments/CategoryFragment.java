@@ -24,11 +24,11 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.example.jeff.move4admin.Library.adapters.AllCategoriesAdapter;
 import com.example.jeff.move4admin.Library.DatabaseFunctions;
 import com.example.jeff.move4admin.Library.Like;
 import com.example.jeff.move4admin.Library.ServerLoader;
 import com.example.jeff.move4admin.Library.ServerRequestHandler;
+import com.example.jeff.move4admin.Library.adapters.AllCategoriesAdapter;
 import com.example.jeff.move4admin.R;
 
 import org.json.JSONArray;
@@ -58,7 +58,8 @@ public class CategoryFragment extends Fragment {
     private String mParam2;
     private Context mContext;
     private GridView g_likes;
-    private Button b_addcategory;
+    private MenuItem m_add;
+    private MenuItem m_save;
     private EditText e_categoryinput;
     private OnFragmentInteractionListener mListener;
 
@@ -103,6 +104,8 @@ public class CategoryFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add, menu);
+        m_add = menu.findItem(R.id.action_add);
+        m_save = menu.findItem(R.id.action_save);
     }
 
     @Override
@@ -110,10 +113,43 @@ public class CategoryFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add:
-                b_addcategory.setVisibility(View.VISIBLE);
+                m_save.setVisible(true);
+                m_add.setVisible(false);
                 e_categoryinput.setVisibility(View.VISIBLE);
                 e_categoryinput.setClickable(true);
                 return true;
+
+            case R.id.action_save:
+                final String s = e_categoryinput.getText().toString();
+
+                Boolean doublevalue = false;
+                for (Like l : likes) {
+                    if (l.getcategoryName().equals(s)) {
+                        doublevalue = true;
+                        e_categoryinput.setError("category already exists");
+                        break;
+                    }
+                }
+                if (!doublevalue && s.length() > 0) {
+                    e_categoryinput.setClickable(false);
+                    ServerRequestHandler.uploadCategory(new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonObject) {
+                            refreshlikes();
+                            e_categoryinput.setText("");
+                            e_categoryinput.setVisibility(View.INVISIBLE);
+                            refreshlikes();
+                            hideKeyboard();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+
+                        }
+                    }, s, mContext);
+                }
+                m_save.setVisible(false);
+                m_add.setVisible(true);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -125,57 +161,14 @@ public class CategoryFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_category, container, false);
         g_likes = (GridView) v.findViewById(R.id.g_category_likes);
-        b_addcategory = (Button) v.findViewById(R.id.b_category_addcategory);
         e_categoryinput = (EditText) v.findViewById(R.id.e_category_categoryInput);
         refreshlikes();
 
-        //region b_addcategory
-        b_addcategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                final String s = e_categoryinput.getText().toString();
-
-                Boolean doublevalue = false;
-                for (Like l : likes) {
-                    if (l.getcategoryName().equals(s)) {
-                        doublevalue = true;
-                        e_categoryinput.setError("category already exists");
-                        break;
-                    }
-                }
-                if (!doublevalue && s.length() >0) {
-                    e_categoryinput.setClickable(false);
-                    ServerRequestHandler.uploadCategory(new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jsonObject) {
-                            dbf.addALLCategory(s);
-                            likes = dbf.getALLlikes();
-                            b_addcategory.setVisibility(View.INVISIBLE);
-                            e_categoryinput.setText("");
-                            e_categoryinput.setVisibility(View.INVISIBLE);
-                            Log.e("refeshgrid", "refresh");
-                            refreshlikes();
-                            hideKeyboard();
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
-                        }
-                    }, s, mContext);
-
-
-                }
-            }
-        });
-
-//endregion
 
         g_likes.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             public boolean onItemLongClick(AdapterView<?> arg0, final View arg1,
-                int position, long arg3) {
-
+                                           int position, long arg3) {
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                 alert.setTitle("Delete");
@@ -231,18 +224,18 @@ public class CategoryFragment extends Fragment {
         ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray jsonArray) {
-                dbf.resetAllLikes();
+                likes.clear();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                        try {
+                    try {
                         JSONObject o = jsonArray.getJSONObject(i);
                         int id = o.getInt("id");
                         String like = o.getString("name");
-                        dbf.addALLCategory(id, like);
+                        Like l = new Like(id,like);
+                        likes.add(l);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-                likes = dbf.getALLlikes();
                 if (g_likes != null) {
                     g_likes.setAdapter(new AllCategoriesAdapter(getActivity(), likes));
                     g_likes.invalidate();
@@ -284,6 +277,14 @@ public class CategoryFragment extends Fragment {
         }, input, mContext);
     }
 
+    private void hideKeyboard() {
+        // Check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -298,15 +299,6 @@ public class CategoryFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onCategoryInteraction(Uri uri);
-    }
-
-    private void hideKeyboard() {
-        // Check if no view has focus:
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
     }
 
 }

@@ -204,7 +204,6 @@ public class OfferFragment extends Fragment {
                 t_addOfferLabel.setText(t_offerIDLabel.getText());
                 t_addOfferLabel.setVisibility(View.VISIBLE);
                 lin_offerEditTitle.setBackgroundResource(R.color.move4darker);
-                e_offerDesc.setText(t_offerDesc.getText());
                 int position = 0;
                 for (Like c : categoriesList) {
                     if (c.getcategoryName().equals(t_offerCategory.getText().toString())) {
