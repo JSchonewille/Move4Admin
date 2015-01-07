@@ -3,10 +3,10 @@
 
     <string name="app_name">Move4Admin</string>
     <string name="title_activity_Splashscreen">Move 4 Admin</string>
-    <string name="title_section1">Users</string>
-    <string name="title_section2">Categories</string>
-    <string name="title_section3">products</string>
-    <string name="title_section4">Offers</string>
+    <string name="title_section1">Gebruikers</string>
+    <string name="title_section2">Categoriën</string>
+    <string name="title_section3">Producten</string>
+    <string name="title_section4">Aanbiedingen</string>
     <string name="title_section5">Beacons</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

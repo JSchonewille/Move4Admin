@@ -22,7 +22,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="0.8"
             android:id="@+id/offerViewFrame"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -33,38 +33,39 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:id="@+id/l_offerViewTitle"
+                    android:focusableInTouchMode="false">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="259dp"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/t_offerIDLabel"
                         android:gravity="center"
                         android:textColor="@android:color/white"
                         android:autoText="false"
-                        android:background="@color/move4darker"
-                        android:visibility="invisible"
-                        android:layout_weight="0.1" />
+                        android:visibility="invisible" />
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/t_offerLabel"
                         android:gravity="center"
                         android:textColor="@android:color/white"
                         android:autoText="false"
-                        android:background="@color/move4darker"
                         android:visibility="invisible"
-                        android:layout_weight="0.9" />
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="260dp">
+                    android:minHeight="260dp"
+                    android:layout_marginRight="8dp">
 
                     <ImageView
                         android:layout_width="259dp"
@@ -75,24 +76,31 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Category: "
+                        android:text="Categorie: "
                         android:id="@+id/t_offerCategoryLabel"
-                        android:visibility="invisible" />
+                        android:visibility="invisible"
+                        android:layout_marginLeft="8dp"
+                        android:textSize="@dimen/text_size" />
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:id="@+id/t_offerCategory"
-                        android:layout_marginLeft="10dp" />
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:textSize="@dimen/text_size" />
 
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/t_offerInfo" />
+                    android:id="@+id/t_offerInfo"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center_horizontal"
+                    android:textSize="@dimen/text_size" />
             </LinearLayout>
         </FrameLayout>
 
@@ -108,22 +116,29 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.8">
 
-                <TextView
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/t_addOfferLabel"
-                    android:gravity="center"
-                    android:textColor="@android:color/white"
-                    android:autoText="false"
-                    android:background="@color/move4darker"
-                    android:visibility="invisible" />
+                    android:id="@+id/l_offerEditTitle">
+
+                    <TextView
+                        android:layout_width="259dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/t_addOfferLabel"
+                        android:gravity="center"
+                        android:textColor="@android:color/white"
+                        android:autoText="false"
+                        android:visibility="invisible" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="260dp">
+                    android:minHeight="260dp"
+                    android:layout_marginRight="8dp">
 
                     <ImageView
                         android:layout_width="259dp"
@@ -134,7 +149,8 @@
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="8dp">
 
                         <Spinner
                             android:layout_width="match_parent"
@@ -150,8 +166,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/e_addOfferDesc"
-                    android:text="Description"
-                    android:gravity="left" />
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center_horizontal"
+                    android:textSize="@dimen/text_size"
+                    android:hint="Beschrijving" />
             </LinearLayout>
         </FrameLayout>
 

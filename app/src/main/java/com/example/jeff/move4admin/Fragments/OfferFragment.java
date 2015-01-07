@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -78,6 +79,8 @@ public class OfferFragment extends Fragment {
     private ArrayList<Like> categoriesList = new ArrayList<Like>();
     private ArrayList<Offer> offerList = new ArrayList<Offer>();
     private Context mContext;
+    private LinearLayout lin_offerTitle;
+    private LinearLayout lin_offerEditTitle;
     private FrameLayout f_viewFrame;
     private FrameLayout f_editFrame;
 
@@ -148,7 +151,7 @@ public class OfferFragment extends Fragment {
                 m_save.setVisible(true);
 
                 // resets the layout
-                e_offerDesc.setText("Description");
+
                 s_offerCategory.setSelection(0);
                 i_addOfferImage.setImageResource(R.drawable.no_product);
                 return true;
@@ -200,6 +203,7 @@ public class OfferFragment extends Fragment {
                 // resets the layout
                 t_addOfferLabel.setText(t_offerIDLabel.getText());
                 t_addOfferLabel.setVisibility(View.VISIBLE);
+                lin_offerEditTitle.setBackgroundResource(R.color.move4darker);
                 e_offerDesc.setText(t_offerDesc.getText());
                 int position = 0;
                 for (Like c : categoriesList) {
@@ -235,6 +239,8 @@ public class OfferFragment extends Fragment {
         t_offerCategory = (TextView) v.findViewById(R.id.t_offerCategory);
         t_offerCategoryLabel = (TextView) v.findViewById(R.id.t_offerCategoryLabel);
         t_offerIDLabel = (TextView) v.findViewById(R.id.t_offerIDLabel);
+        lin_offerTitle = (LinearLayout) v.findViewById(R.id.l_offerViewTitle);
+        lin_offerEditTitle = (LinearLayout) v.findViewById(R.id.l_offerEditTitle);
         ///////////////////////////////////////////////////////////////////
 
         /////////////////////// edit//////////////////////////////////////
@@ -435,6 +441,7 @@ public class OfferFragment extends Fragment {
             }
         }
         m_edit.setVisible(true);
+        lin_offerTitle.setBackgroundResource(R.color.move4darker);
         t_offerNameLabel.setVisibility(View.VISIBLE);
         t_offerIDLabel.setVisibility(View.VISIBLE);
         t_offerDesc.setText(o.getDescription());

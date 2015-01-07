@@ -60,7 +60,9 @@
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="0.1">
+                    android:layout_weight="0.1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp">
 
                     <Button
                         style="?android:attr/buttonStyleSmall"
@@ -114,7 +116,9 @@
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp">
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -125,50 +129,58 @@
                             android:maxHeight="150dp"
                             android:maxWidth="150dp" />
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:orientation="vertical"
                             android:layout_width="fill_parent"
-                            android:layout_height="fill_parent">
+                            android:layout_height="150dp"
+                            android:layout_marginLeft="8dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="Name : "
+                                android:text="Naam: "
                                 android:id="@+id/t_infoProductNameLabel" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="Category :"
+                                android:text="Categorie:"
                                 android:id="@+id/t_infoProductCategory"
                                 android:layout_below="@id/t_infoProductNameLabel"
                                  />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="Description:"
-                                android:id="@+id/t_infoProductDescriptionLabel"
-                                android:layout_below="@+id/t_infoProductCategory"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginTop="20dp" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="description"
-                                android:id="@+id/t_infoProductDescription"
-                                android:layout_below="@+id/t_infoProductDescriptionLabel"
-                                android:layout_alignParentStart="true"
-                                android:gravity="center_horizontal" />
-
-                        </RelativeLayout>
+                        </LinearLayout>
 
                     </LinearLayout>
+
+                    <RelativeLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Beschrijving:"
+                            android:id="@+id/t_infoProductDescriptionLabel"
+                            android:layout_below="@+id/t_infoProductCategory"
+                            android:layout_centerHorizontal="true" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:id="@+id/t_infoProductDescription"
+                            android:layout_below="@+id/t_infoProductDescriptionLabel"
+                            android:layout_alignParentStart="true"
+                            android:gravity="center_horizontal" />
+
+                    </RelativeLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -196,7 +208,9 @@
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent" >
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp">
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -207,40 +221,41 @@
                             android:maxHeight="150dp"
                             android:maxWidth="150dp" />
 
-                        <RelativeLayout
-                            android:orientation="vertical"
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Categorie:"
+                            android:id="@+id/t_infoOfferCategory"
+                            android:layout_marginLeft="8dp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="Category :"
-                                android:id="@+id/t_infoOfferCategory"
-                                />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="Description:"
-                                android:id="@+id/t_infoOfferDescriptionLabel"
-                                android:layout_below="@+id/t_infoOfferCategory"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginTop="20dp" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="description"
-                                android:id="@+id/t_infoOfferDesc"
-                                android:layout_below="@+id/t_infoOfferDescriptionLabel"
-                                android:layout_alignParentStart="true"
-                                android:gravity="center_horizontal" />
-                        </RelativeLayout>
                     </LinearLayout>
+
+                    <RelativeLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Beschrijving:"
+                            android:id="@+id/t_infoOfferDescriptionLabel"
+                            android:layout_below="@+id/t_infoOfferCategory"
+                            android:layout_centerHorizontal="true" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:id="@+id/t_infoOfferDesc"
+                            android:layout_below="@+id/t_infoOfferDescriptionLabel"
+                            android:layout_alignParentStart="true"
+                            android:gravity="center_horizontal" />
+                    </RelativeLayout>
                 </LinearLayout>
 
             </LinearLayout>
@@ -256,7 +271,9 @@
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.1">
+                android:layout_weight="0.1"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
 
                 <Button
                     style="?android:attr/buttonStyleSmall"
@@ -339,16 +356,9 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/i_editProductImage"
-                        android:minHeight="150dp"
-                        android:minWidth="150dp"
-                        android:maxHeight="150dp"
-                        android:maxWidth="150dp" />
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp">
 
                     <RelativeLayout
                         android:orientation="vertical"
@@ -359,7 +369,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Name : "
+                            android:text="Naam : "
                             android:id="@+id/t_editProductNameLabel" />
 
                         <TextView
@@ -375,7 +385,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Description:"
+                            android:text="Beschrijving:"
                             android:id="@+id/t_editProductDescriptionLabel"
                             android:layout_below="@+id/t_editProductCategory"
                             android:layout_centerHorizontal="true"
@@ -399,7 +409,8 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.45">
+                android:layout_weight="0.45"
+                android:layout_marginRight="8dp">
 
 
                 <LinearLayout
@@ -428,25 +439,17 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent" >
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/i_editOfferImage"
-                        android:minHeight="150dp"
-                        android:minWidth="150dp"
-                        android:maxHeight="150dp"
-                        android:maxWidth="150dp" />
-
                     <RelativeLayout
                         android:orientation="vertical"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent" >
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="8dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Category :"
+                            android:text="Categorie :"
                             android:id="@+id/t_editOfferCategory"
                             android:layout_alignParentStart="true" />
 
@@ -454,7 +457,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Description:"
+                            android:text="Beschrijving:"
                             android:id="@+id/t_editOfferDescriptionLabel"
                             android:layout_below="@+id/t_editOfferCategory"
                             android:layout_centerHorizontal="true"

@@ -8,22 +8,22 @@ xmlns:yourapp="http://schemas.android.com/tools">
 
 
 <item android:id="@+id/action_edit"
-    android:title="Edit"
+    android:title="Wijzig"
     android:showAsAction="always"
     android:visible="false"/>
 
 <item android:id="@+id/action_add"
     android:icon="@android:drawable/ic_menu_add"
-    android:title="action_add"
+    android:title="Voeg toe"
     android:showAsAction="always"/>
 
 <item android:id="@+id/action_save"
-    android:title="Save"
+    android:title="Opslaan"
     android:showAsAction="always"
     android:visible="false"/>
 
 <item android:id="@+id/action_options"
-    android:title="Edit"
+    android:title="Achtergrond"
     android:showAsAction="always"
     android:icon="@android:drawable/ic_menu_gallery"
     android:visible="false"/>

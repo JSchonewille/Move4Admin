@@ -312,8 +312,6 @@ public class BeaconFragment extends Fragment {
         t_editProductDesc = (TextView) v.findViewById(R.id.t_editProductDescription);
         t_editOfferCategory = (TextView) v.findViewById(R.id.t_editOfferCategory);
         t_editOfferDesc = (TextView) v.findViewById(R.id.t_editOfferDesc);
-        i_editProductImage = (ImageView) v.findViewById(R.id.i_editProductImage);
-        i_editOfferImage = (ImageView) v.findViewById(R.id.i_editOfferImage);
         e_editMajor = (EditText) v.findViewById(R.id.e_editMajor);
         e_editMinor = (EditText) v.findViewById(R.id.e_editMinor);
         s_editProductSpinner = (Spinner) v.findViewById(R.id.s_editProductSpinner);
