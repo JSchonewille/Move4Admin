@@ -167,7 +167,9 @@ public class OfferFragment extends Fragment {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Bitmap b = ((BitmapDrawable) i_addOfferImage.getDrawable()).getBitmap();
                             b = Bitmap.createScaledBitmap(b, 200, 200, false);
+
                             String img = base64(i_addOfferImage.getDrawable());
+
                             int categoryid = categoriesList.get(s_offerCategory.getSelectedItemPosition()).getcategoryID();
                             f_editFrame.setVisibility(View.GONE);
                             f_viewFrame.setVisibility(View.VISIBLE);
@@ -201,6 +203,8 @@ public class OfferFragment extends Fragment {
                 m_save.setVisible(true);
 
                 // resets the layout
+
+                e_offerDesc.setText(t_offerDesc.getText());
                 t_addOfferLabel.setText(t_offerIDLabel.getText());
                 t_addOfferLabel.setVisibility(View.VISIBLE);
                 lin_offerEditTitle.setBackgroundResource(R.color.move4darker);
@@ -219,7 +223,6 @@ public class OfferFragment extends Fragment {
         }
         return true;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:id="@+id/f_BeaconInfoFrame"
                 android:layout_height="match_parent"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -265,7 +265,7 @@
             android:layout_width="match_parent"
             android:id="@+id/f_BeaconEditFrame"
             android:layout_height="match_parent"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -301,7 +301,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/e_editMajor"
-                        android:minWidth="80dp" />
+                        android:minWidth="80dp"
+                        android:text="31690"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -321,7 +323,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/e_editMinor"
-                        android:minWidth="80dp" />
+                        android:minWidth="80dp"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
 
             </LinearLayout>

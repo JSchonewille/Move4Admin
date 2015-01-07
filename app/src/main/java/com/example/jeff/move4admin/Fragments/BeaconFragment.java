@@ -934,8 +934,30 @@ public class BeaconFragment extends Fragment {
 
     public void setEdit(int input) {
         Beacon b = beaconList.get(input);
+        int i =0;
+        for (Offer o : offerList)
+        {
+            if (o.getOfferID() == b.getOfferID())
+            {
+              s_editOfferSpinner.setSelection(i);
+            }
+            i++;
+        }
+
+        int j = 0;
+        for (Product p : productList)
+        {
+            if(p.getProductID() == b.getProductID())
+            {
+                s_editProductSpinner.setSelection(j);
+            }
+            j++;
+        }
+
+
         e_editMajor.setText(Integer.toString(b.getMajor()));
         e_editMinor.setText(Integer.toString(b.getMinor()));
+
 
 
     }
@@ -967,7 +989,7 @@ public class BeaconFragment extends Fragment {
     }
 
     public void clearEdit() {
-        e_editMajor.setText("");
+        e_editMajor.setText("31690");
         e_editMinor.setText("");
     }
 

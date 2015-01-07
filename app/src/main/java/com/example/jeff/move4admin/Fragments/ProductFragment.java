@@ -143,6 +143,8 @@ public class ProductFragment extends Fragment {
                 m_add.setVisible(false);
                 m_edit.setVisible(false);
                 m_save.setVisible(true);
+                e_productDesc.setText("");
+                e_productName.setText("");
 
                 // resets the layout
                 s_productCategory.setSelection(0);

@@ -113,7 +113,8 @@
                         android:layout_width="259dp"
                         android:layout_height="259dp"
                         android:id="@+id/i_addImage"
-                        android:background="@android:drawable/ic_menu_camera" />
+                        android:focusableInTouchMode="false"
+                        android:src="@android:drawable/ic_menu_camera" />
 
                     <LinearLayout
                         android:orientation="vertical"

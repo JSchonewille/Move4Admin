@@ -144,7 +144,7 @@
                         android:layout_width="259dp"
                         android:layout_height="259dp"
                         android:id="@+id/i_OfferaddImage"
-                        android:background="@android:drawable/ic_menu_camera" />
+                        android:src="@android:drawable/ic_menu_camera" />
 
                     <LinearLayout
                         android:orientation="vertical"
