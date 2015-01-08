@@ -521,7 +521,7 @@ public class ProductFragment extends Fragment {
         b = Bitmap.createScaledBitmap(b, 200, 200, false);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        b.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] bitmapdata = stream.toByteArray();
         return Base64.encodeToString(bitmapdata, 1);
     }

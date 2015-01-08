@@ -283,9 +283,8 @@ public class OfferFragment extends Fragment {
             Uri targetUri = data.getData();
             Bitmap bitmap;
             try {
-                bitmap = BitmapFactory.decodeStream(cw.getContentResolver().openInputStream(targetUri));
-                Bitmap b = Bitmap.createScaledBitmap(bitmap, 800, 800, true);
-                i_addOfferImage.setImageBitmap(b);
+                Drawable d = Drawable.createFromStream(cw.getContentResolver().openInputStream(targetUri),"img");
+                i_addOfferImage.setImageDrawable(d);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -571,7 +570,7 @@ public class OfferFragment extends Fragment {
         b = Bitmap.createScaledBitmap(b, 200, 200, false);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        b.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] bitmapdata = stream.toByteArray();
         return Base64.encodeToString(bitmapdata, 1);
     }

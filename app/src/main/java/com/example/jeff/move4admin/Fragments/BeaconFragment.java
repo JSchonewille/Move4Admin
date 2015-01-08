@@ -115,8 +115,7 @@ public class BeaconFragment extends Fragment {
     private ImageView i_infoOfferImage;
 
     //all edit screen variables
-    private TextView t_editMajor;
-    private TextView t_editoMinor;
+
     private TextView t_editProductID;
     private TextView t_editOfferID;
     private TextView t_editProductName;
@@ -303,8 +302,6 @@ public class BeaconFragment extends Fragment {
         i_infoProductImage = (ImageView) v.findViewById(R.id.i_infoProductImage);
         i_infoOfferImage = (ImageView) v.findViewById(R.id.i_infoOfferImage);
         // edit variables initialisation
-        t_editMajor = (TextView) v.findViewById(R.id.t_editMajorLabel);
-        t_editoMinor = (TextView) v.findViewById(R.id.t_editMinorLabel);
         t_editProductID = (TextView) v.findViewById(R.id.t_editProductIDLabel);
         t_editOfferID = (TextView) v.findViewById(R.id.t_editOfferIDLabel);
         t_editProductName = (TextView) v.findViewById(R.id.t_editProductNameLabel);
@@ -899,11 +896,11 @@ public class BeaconFragment extends Fragment {
 
             t_infoMajor.setText("Major: " + Integer.toString(major));
             t_infoMinor.setText("Minor: " + Integer.toString(minor));
-            t_infoProductID.setText("Product id: " + Integer.toString(productID));
-            t_infoOfferID.setText("Offer id: " + Integer.toString(OfferID));
-            t_infoProductName.setText("Name: " + beaconProduct.getName());
-            t_infoProductCategory.setText("Category: " + productCategory);
-            t_infoOfferCategory.setText("Category: " + offerCategory);
+            t_infoProductID.setText("Product ID: " + Integer.toString(productID));
+            t_infoOfferID.setText("Aanbieding ID: " + Integer.toString(OfferID));
+            t_infoProductName.setText("Naam: " + beaconProduct.getName());
+            t_infoProductCategory.setText("Categorie: " + productCategory);
+            t_infoOfferCategory.setText("Categorie: " + offerCategory);
             t_infoProductDesc.setText(beaconProduct.getDescription());
             t_infoOfferDesc.setText(beaconOffer.getDescription());
             ;
@@ -940,6 +937,7 @@ public class BeaconFragment extends Fragment {
             if (o.getOfferID() == b.getOfferID())
             {
               s_editOfferSpinner.setSelection(i);
+               t_editOfferID.setText("Product ID : " + Integer.toString(o.getOfferID()));
             }
             i++;
         }
@@ -950,6 +948,7 @@ public class BeaconFragment extends Fragment {
             if(p.getProductID() == b.getProductID())
             {
                 s_editProductSpinner.setSelection(j);
+                t_editProductID.setText("Aanbieding ID : " + Integer.toString(p.getProductID()));
             }
             j++;
         }
@@ -968,10 +967,10 @@ public class BeaconFragment extends Fragment {
         {
             if (c.getcategoryID() == p.getCategoryID())
             {
-                t_editProductCategory.setText("Category: " +c.getcategoryName());
+                t_editProductCategory.setText("Categorie: " +c.getcategoryName());
             }
         }
-        t_editProductName.setText("Name: " + p.getName());
+        t_editProductName.setText("Naam: " + p.getName());
         t_editProductDesc.setText(p.getDescription());
     }
 
@@ -981,7 +980,7 @@ public class BeaconFragment extends Fragment {
         {
             if (c.getcategoryID() == o.getCategoryID())
             {
-                t_editOfferCategory.setText("Category: " +c.getcategoryName());
+                t_editOfferCategory.setText("Categorie: " +c.getcategoryName());
             }
         }
         t_editOfferDesc.setText(o.getDescription());
