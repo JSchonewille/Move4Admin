@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -29,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -310,118 +313,122 @@ public class OfferFragment extends Fragment {
     }
 
     private void getOffers() {
-        ServerRequestHandler.getAllOffers(new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                offerList.clear();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        JSONObject o = jsonArray.getJSONObject(i);
-                        Offer offer = new Offer();
-                        int id = o.getInt("id");
-                        int cat;
-                        String image;
-                        String desc;
+        if (isOnline()) {
+            ServerRequestHandler.getAllOffers(new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray jsonArray) {
+                    offerList.clear();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            JSONObject o = jsonArray.getJSONObject(i);
+                            Offer offer = new Offer();
+                            int id = o.getInt("id");
+                            int cat;
+                            String image;
+                            String desc;
 
-                        if (!o.isNull("category")) {
-                            cat = o.getInt("category");
-                            offer.setCategoryID(cat);
+                            if (!o.isNull("category")) {
+                                cat = o.getInt("category");
+                                offer.setCategoryID(cat);
+                            }
+
+                            if (!o.isNull("image")) {
+                                image = o.getString("image");
+                                offer.setImage(image);
+                            }
+
+                            if (!o.isNull("description")) {
+                                desc = o.getString("description");
+                                offer.setDescription(desc);
+                            }
+
+                            offer.setOfferID(id);
+
+
+                            offerList.add(offer);
+
+                        } catch (Exception e) {
+                            Log.e("error", e.toString());
                         }
+                    }
+                    // set adapter after filling the list of offers
+                    if (l_offerListView != null) {
 
-                        if (!o.isNull("image")) {
-                            image = o.getString("image");
-                            offer.setImage(image);
-                        }
+                        l_offerListView.setAdapter(new OfferAdapter(mContext, offerList));
+                        l_offerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                // function responsible for the clicks in the offer list
+                                offerListClick(adapterView, view, i, l);
+                                f_viewFrame.setVisibility(View.VISIBLE);
+                                f_editFrame.setVisibility(View.GONE);
+                                m_save.setVisible(false);
+                                m_add.setVisible(true);
+                            }
+                        });
+                        l_offerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
-                        if (!o.isNull("description")) {
-                            desc = o.getString("description");
-                            offer.setDescription(desc);
-                        }
-
-                        offer.setOfferID(id);
-
-
-                        offerList.add(offer);
-
-                    } catch (Exception e) {
-                        Log.e("error", e.toString());
+                            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                // function responsible for the product list long clicks
+                                offerListLongClick(adapterView, view, i, l);
+                                return true;
+                            }
+                        });
                     }
                 }
-                // set adapter after filling the list of offers
-                if (l_offerListView != null) {
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e("error", volleyError.toString());
 
-                    l_offerListView.setAdapter(new OfferAdapter(mContext, offerList));
-                    l_offerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            // function responsible for the clicks in the offer list
-                            offerListClick(adapterView, view, i, l);
-                            f_viewFrame.setVisibility(View.VISIBLE);
-                            f_editFrame.setVisibility(View.GONE);
-                            m_save.setVisible(false);
-                            m_add.setVisible(true);
-                        }
-                    });
-                    l_offerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-                        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            // function responsible for the product list long clicks
-                            offerListLongClick(adapterView, view, i, l);
-                            return true;
-                        }
-                    });
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.e("error", volleyError.toString());
-
-            }
-        }, mContext);
+            }, mContext);
+        }
     }
 
     public void offerListLongClick(AdapterView<?> arg0, final View arg1,
                                      int position, long arg3) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Delete");
-        alert.setMessage("Do you want to delete this offer ?");
-        // Set an EditText view to get user input
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                TextView txtview = (TextView) arg1.findViewById(R.id.rowLayoutName);
-                final String text = txtview.getText().toString();
-                ServerRequestHandler.DeleteOffer(new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        try {
-                            String s = jsonObject.getString("returnvalue");
-                            if (s.equals("succes")) {
-                                getOffers();
-                            } else {
-                                Log.e("error", s);
-                                Log.e("text = ", text);
+        if (isOnline()) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+            alert.setTitle("Delete");
+            alert.setMessage("Do you want to delete this offer ?");
+            // Set an EditText view to get user input
+            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    TextView txtview = (TextView) arg1.findViewById(R.id.rowLayoutName);
+                    final String text = txtview.getText().toString();
+                    ServerRequestHandler.DeleteOffer(new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonObject) {
+                            try {
+                                String s = jsonObject.getString("returnvalue");
+                                if (s.equals("succes")) {
+                                    getOffers();
+                                } else {
+                                    Log.e("error", s);
+                                    Log.e("text = ", text);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
+
                         }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
 
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-
-                    }
-                }, text, mContext);
-            }
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // Canceled.
-            }
-        });
-        alert.show();
+                        }
+                    }, text, mContext);
+                }
+            });
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+            alert.show();
+        }
     }
 
     public void offerListClick(AdapterView<?> adapterView, View view, int Position, long id) {
@@ -460,109 +467,113 @@ public class OfferFragment extends Fragment {
     }
 
     public void getCategories() {
-        final ArrayList<Like> categories = new ArrayList<Like>();
-        ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        JSONObject o = jsonArray.getJSONObject(i);
+        if (isOnline()) {
+            final ArrayList<Like> categories = new ArrayList<Like>();
+            ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray jsonArray) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            JSONObject o = jsonArray.getJSONObject(i);
 
-                        int id = o.getInt("id");
-                        String name = o.getString("name");
+                            int id = o.getInt("id");
+                            String name = o.getString("name");
 
-                        Like l = new Like(id, name);
-                        categories.add(l);
-                    } catch (Exception e) {
+                            Like l = new Like(id, name);
+                            categories.add(l);
+                        } catch (Exception e) {
 
+                        }
                     }
+                    AllCategoriesAdapter ac = new AllCategoriesAdapter(mContext, categories);
+                    s_offerCategory.setAdapter(ac);
+                    categoriesList = categories;
+                    getOffers();
                 }
-                AllCategoriesAdapter ac = new AllCategoriesAdapter(mContext, categories);
-                s_offerCategory.setAdapter(ac);
-                categoriesList = categories;
-                getOffers();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        }, mContext);
+                }
+            }, mContext);
+        }
     }
 
     public void saveOffer( final int categoryID, final String image, final String desc, final Bitmap bitmap) {
+        if (isOnline()) {
+            ServerRequestHandler.uploadOffer(new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    try {
+                        Log.e("returnvalue", jsonObject.getString("returnvalue"));
+                        String filepath = jsonObject.getString("returnvalue");
+                        ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap, filepath);
+                        getOffers();
 
-        ServerRequestHandler.uploadOffer(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                try {
-                    Log.e("returnvalue", jsonObject.getString("returnvalue"));
-                    String filepath = jsonObject.getString("returnvalue");
-                    ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap, filepath);
-                    getOffers();
 
-
-                    for (Like c : categoriesList) {
-                        if (c.getcategoryID() == categoryID) {
-                            t_offerCategory.setText(c.getcategoryName());
-                            break;
+                        for (Like c : categoriesList) {
+                            if (c.getcategoryID() == categoryID) {
+                                t_offerCategory.setText(c.getcategoryName());
+                                break;
+                            }
                         }
+                        t_offerDesc.setText(desc);
+                        //t_offerNameLabel.setText(name);
+                        i_offerImage.setImageBitmap(bitmap);
+                        m_add.setVisible(true);
+                        m_edit.setVisible(true);
+                    } catch (JSONException e) {
+                        Log.e("error", e.toString());
                     }
-                    t_offerDesc.setText(desc);
-                    //t_offerNameLabel.setText(name);
-                    i_offerImage.setImageBitmap(bitmap);
-                    m_add.setVisible(true);
-                    m_edit.setVisible(true);
-                } catch (JSONException e) {
-                    Log.e("error", e.toString());
+
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-                Log.e("error", volleyError.toString());
-            }
-        }, categoryID, image, desc, mContext);
+                    Log.e("error", volleyError.toString());
+                }
+            }, categoryID, image, desc, mContext);
+        }
     }
 
 
     public void saveOffer( final int productID,final int categoryID, final String image, final String desc, final Bitmap bitmap) {
+        if (isOnline()) {
+            ServerRequestHandler.uploadOffer(new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    try {
+                        Log.e("returnvalue", jsonObject.getString("returnvalue"));
+                        String filepath = jsonObject.getString("returnvalue");
+                        ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap, filepath);
+                        getOffers();
 
-        ServerRequestHandler.uploadOffer(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                try {
-                    Log.e("returnvalue", jsonObject.getString("returnvalue"));
-                    String filepath = jsonObject.getString("returnvalue");
-                    ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap, filepath);
-                    getOffers();
 
-
-                    for (Like c : categoriesList) {
-                        if (c.getcategoryID() == categoryID) {
-                            t_offerCategory.setText(c.getcategoryName());
-                            break;
+                        for (Like c : categoriesList) {
+                            if (c.getcategoryID() == categoryID) {
+                                t_offerCategory.setText(c.getcategoryName());
+                                break;
+                            }
                         }
+                        t_offerDesc.setText(desc);
+                        //t_offerNameLabel.setText(name);
+                        i_offerImage.setImageBitmap(bitmap);
+                        m_add.setVisible(true);
+                        m_edit.setVisible(true);
+                    } catch (JSONException e) {
+                        Log.e("error", e.toString());
                     }
-                    t_offerDesc.setText(desc);
-                    //t_offerNameLabel.setText(name);
-                    i_offerImage.setImageBitmap(bitmap);
-                    m_add.setVisible(true);
-                    m_edit.setVisible(true);
-                } catch (JSONException e) {
-                    Log.e("error", e.toString());
+
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-                Log.e("error", volleyError.toString());
-            }
-        },productID, categoryID, image, desc, mContext);
+                    Log.e("error", volleyError.toString());
+                }
+            }, productID, categoryID, image, desc, mContext);
+        }
     }
 
     public String base64(Drawable d) {
@@ -579,6 +590,16 @@ public class OfferFragment extends Fragment {
         // TODO: Update argument type and name
         public void onOfferInteraction(Uri uri);
     }
-
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        boolean output = netInfo != null && netInfo.isConnectedOrConnecting();
+        if (!output)
+        {
+            Toast.makeText(mContext, "Geen internet verbinding", Toast.LENGTH_SHORT).show();
+        }
+        return output;
+    }
 }
 

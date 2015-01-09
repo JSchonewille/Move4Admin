@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -131,25 +134,27 @@ public class CategoryFragment extends Fragment {
                     }
                 }
                 if (!doublevalue && s.length() > 0) {
-                    e_categoryinput.setClickable(false);
-                    ServerRequestHandler.uploadCategory(new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jsonObject) {
-                            refreshlikes();
-                            e_categoryinput.setText("");
-                            e_categoryinput.setVisibility(View.INVISIBLE);
-                            refreshlikes();
-                            hideKeyboard();
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
+                    if (isOnline()) {
+                        e_categoryinput.setClickable(false);
+                        ServerRequestHandler.uploadCategory(new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject jsonObject) {
+                                refreshlikes();
+                                e_categoryinput.setText("");
+                                e_categoryinput.setVisibility(View.INVISIBLE);
+                                refreshlikes();
+                                hideKeyboard();
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
 
-                        }
-                    }, s, mContext);
+                            }
+                        }, s, mContext);
+                    }
+                    m_save.setVisible(false);
+                    m_add.setVisible(true);
                 }
-                m_save.setVisible(false);
-                m_add.setVisible(true);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -220,61 +225,65 @@ public class CategoryFragment extends Fragment {
     }
 
     public void refreshlikes() {
+        if (isOnline()) {
 
-        ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                likes.clear();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        JSONObject o = jsonArray.getJSONObject(i);
-                        int id = o.getInt("id");
-                        String like = o.getString("name");
-                        Like l = new Like(id,like);
-                        likes.add(l);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+            ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray jsonArray) {
+                    likes.clear();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            JSONObject o = jsonArray.getJSONObject(i);
+                            int id = o.getInt("id");
+                            String like = o.getString("name");
+                            Like l = new Like(id, like);
+                            likes.add(l);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (g_likes != null) {
+                        g_likes.setAdapter(new AllCategoriesAdapter(getActivity(), likes));
+                        g_likes.invalidate();
                     }
                 }
-                if (g_likes != null) {
-                    g_likes.setAdapter(new AllCategoriesAdapter(getActivity(), likes));
-                    g_likes.invalidate();
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    if (volleyError.networkResponse != null)
+                        Log.e("NETWORKERROR", volleyError.networkResponse.statusCode + " " + new String(volleyError.networkResponse.data));
+                    else {
+                        if (volleyError.getMessage() == null)
+                            Log.e("NETWORKERROR", "timeout");
+                        else
+                            Log.e("NETWORKERROR", volleyError.getMessage());
+                    }
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                if (volleyError.networkResponse != null)
-                    Log.e("NETWORKERROR", volleyError.networkResponse.statusCode + " " + new String(volleyError.networkResponse.data));
-                else {
-                    if (volleyError.getMessage() == null)
-                        Log.e("NETWORKERROR", "timeout");
-                    else
-                        Log.e("NETWORKERROR", volleyError.getMessage());
-                }
-            }
-        }, mContext);
+            }, mContext);
+        }
     }
 
     public void deleteCat(String input) {
-        ServerRequestHandler.DeleteCategory(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
+        if (isOnline()) {
+            ServerRequestHandler.DeleteCategory(new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
 
-                try {
-                    refreshlikes();
-                    Log.e("henk", jsonObject.toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    try {
+                        refreshlikes();
+                        Log.e("henk", jsonObject.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        }, input, mContext);
+                }
+            }, input, mContext);
+        }
     }
 
     private void hideKeyboard() {
@@ -300,5 +309,15 @@ public class CategoryFragment extends Fragment {
         // TODO: Update argument type and name
         public void onCategoryInteraction(Uri uri);
     }
-
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        boolean output = netInfo != null && netInfo.isConnectedOrConnecting();
+        if (!output)
+        {
+            Toast.makeText(mContext, "Geen internet verbinding", Toast.LENGTH_SHORT).show();
+        }
+        return output;
+    }
 }

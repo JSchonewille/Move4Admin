@@ -11,6 +11,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
@@ -28,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -304,119 +307,123 @@ public class ProductFragment extends Fragment {
     }
 
     private void getProducts() {
-        ServerRequestHandler.getAllProducts(new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                productList.clear();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        JSONObject o = jsonArray.getJSONObject(i);
-                        Product p = new Product();
-                        int id = o.getInt("id");
-                        String name = o.getString("name");
-                        int cat;
-                        String image;
-                        String desc;
+        if (isOnline()) {
+            ServerRequestHandler.getAllProducts(new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray jsonArray) {
+                    productList.clear();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            JSONObject o = jsonArray.getJSONObject(i);
+                            Product p = new Product();
+                            int id = o.getInt("id");
+                            String name = o.getString("name");
+                            int cat;
+                            String image;
+                            String desc;
 
-                        if (!o.isNull("categoryID")) {
-                            cat = o.getInt("categoryID");
-                            p.setCategoryID(cat);
+                            if (!o.isNull("categoryID")) {
+                                cat = o.getInt("categoryID");
+                                p.setCategoryID(cat);
+                            }
+
+                            if (!o.isNull("image")) {
+                                image = o.getString("image");
+                                p.setImage(image);
+                            }
+
+                            if (!o.isNull("description")) {
+                                desc = o.getString("description");
+                                p.setDescription(desc);
+                            }
+
+                            p.setProductID(id);
+                            p.setName(name);
+
+                            productList.add(p);
+
+                        } catch (Exception e) {
+                            Log.e("error", e.toString());
                         }
+                    }
+                    // set adapter after filling the list of products
+                    if (l_productListView != null) {
 
-                        if (!o.isNull("image")) {
-                            image = o.getString("image");
-                            p.setImage(image);
-                        }
+                        l_productListView.setAdapter(new ProductAdapter(mContext, productList));
+                        l_productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                // function responsible for the clicks in the product list
+                                productListClick(adapterView, view, i, l);
+                                f_viewFrame.setVisibility(View.VISIBLE);
+                                f_editFrame.setVisibility(View.GONE);
+                                m_save.setVisible(false);
+                                m_add.setVisible(true);
+                            }
+                        });
+                        l_productListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
-                        if (!o.isNull("description")) {
-                            desc = o.getString("description");
-                            p.setDescription(desc);
-                        }
-
-                        p.setProductID(id);
-                        p.setName(name);
-
-                        productList.add(p);
-
-                    } catch (Exception e) {
-                        Log.e("error", e.toString());
+                            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                // function responsible for the product list long clicks
+                                productListLongClick(adapterView, view, i, l);
+                                return true;
+                            }
+                        });
                     }
                 }
-                // set adapter after filling the list of products
-                if (l_productListView != null) {
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e("error", volleyError.toString());
 
-                    l_productListView.setAdapter(new ProductAdapter(mContext, productList));
-                    l_productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            // function responsible for the clicks in the product list
-                            productListClick(adapterView, view, i, l);
-                            f_viewFrame.setVisibility(View.VISIBLE);
-                            f_editFrame.setVisibility(View.GONE);
-                            m_save.setVisible(false);
-                            m_add.setVisible(true);
-                        }
-                    });
-                    l_productListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-                        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            // function responsible for the product list long clicks
-                            productListLongClick(adapterView, view, i, l);
-                            return true;
-                        }
-                    });
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.e("error", volleyError.toString());
-
-            }
-        }, mContext);
+            }, mContext);
+        }
     }
 
     public void productListLongClick(AdapterView<?> arg0, final View arg1,
                                      int position, long arg3) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Delete");
-        alert.setMessage("Do you want to delete this category ?");
-        // Set an EditText view to get user input
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                TextView txtview = (TextView) arg1.findViewById(R.id.rowLayoutName);
-                final String text = txtview.getText().toString();
-                ServerRequestHandler.DeleteProduct(new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        try {
-                            String s = jsonObject.getString("returnvalue");
-                            if (s.equals("succes")) {
-                                getProducts();
-                            } else {
-                                Log.e("error", s);
-                                Log.e("text = ", text);
+        if (isOnline()) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+            alert.setTitle("Delete");
+            alert.setMessage("Do you want to delete this category ?");
+            // Set an EditText view to get user input
+            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    TextView txtview = (TextView) arg1.findViewById(R.id.rowLayoutName);
+                    final String text = txtview.getText().toString();
+                    ServerRequestHandler.DeleteProduct(new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonObject) {
+                            try {
+                                String s = jsonObject.getString("returnvalue");
+                                if (s.equals("succes")) {
+                                    getProducts();
+                                } else {
+                                    Log.e("error", s);
+                                    Log.e("text = ", text);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
+
                         }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
 
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-
-                    }
-                }, text, mContext);
-            }
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // Canceled.
-            }
-        });
-        alert.show();
+                        }
+                    }, text, mContext);
+                }
+            });
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+            alert.show();
+        }
     }
 
     public void productListClick(AdapterView<?> adapterView, View view, int Position, long id) {
@@ -446,74 +453,74 @@ public class ProductFragment extends Fragment {
     }
 
     public void getCategories() {
+        if (isOnline()) {
+            final ArrayList<Like> categories = new ArrayList<Like>();
+            ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray jsonArray) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            JSONObject o = jsonArray.getJSONObject(i);
 
-        final ArrayList<Like> categories = new ArrayList<Like>();
-        ServerRequestHandler.getAllCategories(new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        JSONObject o = jsonArray.getJSONObject(i);
+                            int id = o.getInt("id");
+                            String name = o.getString("name");
 
-                        int id = o.getInt("id");
-                        String name = o.getString("name");
+                            Like l = new Like(id, name);
+                            categories.add(l);
+                        } catch (Exception e) {
 
-                        Like l = new Like(id, name);
-                        categories.add(l);
-                    } catch (Exception e) {
-
+                        }
                     }
+                    AllCategoriesAdapter ac = new AllCategoriesAdapter(mContext, categories);
+                    s_productCategory.setAdapter(ac);
+                    categoriesList = categories;
+                    getProducts();
                 }
-                AllCategoriesAdapter ac = new AllCategoriesAdapter(mContext, categories);
-                s_productCategory.setAdapter(ac);
-                categoriesList = categories;
-                getProducts();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        }, mContext);
+                }
+            }, mContext);
+        }
     }
 
     public void saveProduct(final String name, final int categoryID, final String image, final String desc, final Bitmap bitmap) {
+        if (isOnline()) {
+            ServerRequestHandler.uploadProduct(new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    try {
+                        Log.e("returnvalue", jsonObject.getString("returnvalue"));
+                        String filepath = jsonObject.getString("returnvalue");
+                        ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap, filepath);
+                        getProducts();
 
-        ServerRequestHandler.uploadProduct(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                try {
-                    Log.e("returnvalue",jsonObject.getString("returnvalue"));
-                    String filepath = jsonObject.getString("returnvalue");
-                    ServerLoader.getInstance(mContext).saveToInternalSorage(bitmap,filepath);
-                    getProducts();
 
-
-                    for(Like c :categoriesList)
-                    {
-                        if (c.getcategoryID() == categoryID)
-                        {
-                            t_productCategory.setText(c.getcategoryName());
-                            break;
+                        for (Like c : categoriesList) {
+                            if (c.getcategoryID() == categoryID) {
+                                t_productCategory.setText(c.getcategoryName());
+                                break;
+                            }
                         }
+                        t_productDesc.setText(desc);
+                        t_productNameLabel.setText(name);
+                        i_productImage.setImageBitmap(bitmap);
+                        m_add.setVisible(true);
+                        m_edit.setVisible(true);
+                    } catch (JSONException e) {
+                        Log.e("error", e.toString());
                     }
-                    t_productDesc.setText(desc);
-                    t_productNameLabel.setText(name);
-                    i_productImage.setImageBitmap(bitmap);
-                    m_add.setVisible(true);
-                    m_edit.setVisible(true);
-                } catch (JSONException e) {
-                    Log.e("error",e.toString());
+
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-                Log.e("error", volleyError.toString());
-            }
-        }, name, categoryID, image, desc, mContext);
+                    Log.e("error", volleyError.toString());
+                }
+            }, name, categoryID, image, desc, mContext);
+        }
     }
 
     public String base64(Drawable d) {
@@ -529,6 +536,18 @@ public class ProductFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onProductInteraction(Uri uri);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        boolean output = netInfo != null && netInfo.isConnectedOrConnecting();
+        if (!output)
+        {
+            Toast.makeText(mContext, "Geen internet verbinding", Toast.LENGTH_SHORT).show();
+        }
+        return output;
     }
 
 }

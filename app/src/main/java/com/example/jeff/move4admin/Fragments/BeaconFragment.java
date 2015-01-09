@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -528,8 +530,7 @@ public class BeaconFragment extends Fragment {
     }
 
     public void getbeacons() {
-
-
+    if(isOnline())
         ServerRequestHandler.getAllBeacons(new Response.Listener<JSONArray>() {
             float starx = 100;
             float stary = 100;
@@ -993,122 +994,134 @@ public class BeaconFragment extends Fragment {
     }
 
     private void save() {
-        if (!editaction) {
-            if (e_editMajor.getText().length() > 0 && e_editMinor.getText().length() > 0) {
-                int major = Integer.decode(e_editMajor.getText().toString());
-                int minor = Integer.decode(e_editMinor.getText().toString());
-                int productID = productList.get(s_editProductSpinner.getSelectedItemPosition()).getProductID();
-                int offerID = offerList.get(s_editOfferSpinner.getSelectedItemPosition()).getOfferID();
+        if(isOnline()) {
+            if (!editaction) {
+                if (e_editMajor.getText().length() > 0 && e_editMinor.getText().length() > 0) {
+                    int major = Integer.decode(e_editMajor.getText().toString());
+                    int minor = Integer.decode(e_editMinor.getText().toString());
+                    int productID = productList.get(s_editProductSpinner.getSelectedItemPosition()).getProductID();
+                    int offerID = offerList.get(s_editOfferSpinner.getSelectedItemPosition()).getOfferID();
 
-                for (Beacon b : beaconList) {
-                    // check if the combination already exists
-                    if (b.getMajor() == major && b.getMinor() == minor) {
-                        Toast.makeText(mContext, "Major / Minor combination already exists ", Toast.LENGTH_SHORT).show();
-                        return;
+                    for (Beacon b : beaconList) {
+                        // check if the combination already exists
+                        if (b.getMajor() == major && b.getMinor() == minor) {
+                            Toast.makeText(mContext, "Major / Minor combination already exists ", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                     }
+                    insertBeacon(productID, offerID, major, minor);
+                } else {
+                    Toast.makeText(mContext, "No value for Major or Minor ", Toast.LENGTH_SHORT).show();
                 }
-                insertBeacon(productID, offerID, major, minor);
-            }
-            else {
-                Toast.makeText(mContext, "No value for Major or Minor ", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-      else if(editaction)
-        {
-            if (e_editMajor.getText().length() > 0 && e_editMinor.getText().length() > 0) {
+            } else if (editaction) {
+                if (e_editMajor.getText().length() > 0 && e_editMinor.getText().length() > 0) {
 
 
-                int major = Integer.decode(e_editMajor.getText().toString());
-                int minor = Integer.decode(e_editMinor.getText().toString());
-                int productID = productList.get(s_editProductSpinner.getSelectedItemPosition()).getProductID();
-                int offerID = offerList.get(s_editOfferSpinner.getSelectedItemPosition()).getOfferID();
+                    int major = Integer.decode(e_editMajor.getText().toString());
+                    int minor = Integer.decode(e_editMinor.getText().toString());
+                    int productID = productList.get(s_editProductSpinner.getSelectedItemPosition()).getProductID();
+                    int offerID = offerList.get(s_editOfferSpinner.getSelectedItemPosition()).getOfferID();
 
-                for(Beacon beacon : beaconList)
-                {
-                    if(major == beacon.getMajor() && minor == beacon.getMinor())
-                    {
-                        updateBeacon(beacon.getBeaconID(),productID, offerID, major, minor);
-                        break;
+                    for (Beacon beacon : beaconList) {
+                        if (major == beacon.getMajor() && minor == beacon.getMinor()) {
+                            updateBeacon(beacon.getBeaconID(), productID, offerID, major, minor);
+                            break;
+                        }
                     }
-                }
 
+                }
             }
         }
     }
 
     private void insertBeacon(int productid, int offerid, int major, int minor) {
-        ServerRequestHandler.uploadBeacon(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                // refresh our list of beacons
-                try {
-                    Log.e("error", jsonObject.getString("returnvalue"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if (isOnline()) {
+            ServerRequestHandler.uploadBeacon(new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    // refresh our list of beacons
+                    try {
+                        Log.e("error", jsonObject.getString("returnvalue"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    getbeacons();
+                    hideSlide();
                 }
-                getbeacons();
-                hideSlide();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.e("error",volleyError.toString());
-            }
-        }, productid, offerid, major, minor, mContext);
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e("error", volleyError.toString());
+                }
+            }, productid, offerid, major, minor, mContext);
+        }
     }
 
     private void updateBeacon(int beaconid,int productid, int offerid, int major, int minor) {
-        ServerRequestHandler.editBeacon(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                // refresh our list of beacons
-                try {
-                    Log.e("error", jsonObject.getString("returnvalue"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if (isOnline()) {
+            ServerRequestHandler.editBeacon(new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    // refresh our list of beacons
+                    try {
+                        Log.e("error", jsonObject.getString("returnvalue"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    getbeacons();
+                    hideSlide();
                 }
-                getbeacons();
-                hideSlide();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.e("error", volleyError.toString());
-            }
-        }, beaconid, productid, offerid, major, minor, mContext);
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e("error", volleyError.toString());
+                }
+            }, beaconid, productid, offerid, major, minor, mContext);
+        }
     }
 
-    private void deleteBeacon(final int beaconID,final int major,final int minor, final int position)
-    {
-        ServerRequestHandler.DeleteBeacon(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                try {
-                    if (jsonObject.getString("returnvalue").equals("succes"))
-                    {
-                        DatabaseFunctions.getInstance(mContext).deleteBeaconLocation(Integer.toString(major),Integer.toString(minor));
-                        ImageView d = screenBeaconList.get(position).getImageView();
-                        d.setVisibility(View.GONE);
-                        drawFrame.removeView(d);
-                        drawFrame.invalidate();
+    private void deleteBeacon(final int beaconID,final int major,final int minor, final int position) {
+        if (isOnline()) {
+            ServerRequestHandler.DeleteBeacon(new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    try {
+                        if (jsonObject.getString("returnvalue").equals("succes")) {
+                            DatabaseFunctions.getInstance(mContext).deleteBeaconLocation(Integer.toString(major), Integer.toString(minor));
+                            ImageView d = screenBeaconList.get(position).getImageView();
+                            d.setVisibility(View.GONE);
+                            drawFrame.removeView(d);
+                            drawFrame.invalidate();
 
-                        getbeacons();
+                            getbeacons();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
-        },new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        },Integer.toString(beaconID),mContext);
+                }
+            }, Integer.toString(beaconID), mContext);
+        }
     }
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onBeaconInteraction(Uri uri);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        boolean output = netInfo != null && netInfo.isConnectedOrConnecting();
+        if (!output)
+        {
+            Toast.makeText(mContext,"Geen internet verbinding",Toast.LENGTH_SHORT).show();
+        }
+        return output;
     }
 
 }
